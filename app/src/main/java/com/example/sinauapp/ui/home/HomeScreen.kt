@@ -3,6 +3,7 @@ package com.example.sinauapp.ui.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -31,10 +34,20 @@ import androidx.compose.ui.unit.dp
 import com.example.sinauapp.R
 import com.example.sinauapp.domain.model.Mapel
 import com.example.sinauapp.ui.components.CountCard
+import com.example.sinauapp.ui.components.MapelCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
+
+    val mapel = listOf(
+        Mapel(name = "Matematika", totalJamBelajar = 10f, colors = Mapel.mapelCardColor[0]),
+        Mapel(name = "Bahasa Indonesia", totalJamBelajar = 10f, colors = Mapel.mapelCardColor[1]),
+        Mapel(name = "Bahasa Inggris", totalJamBelajar = 10f, colors = Mapel.mapelCardColor[2]),
+        Mapel(name = "IPA", totalJamBelajar = 10f, colors = Mapel.mapelCardColor[3]),
+        Mapel(name = "IPS", totalJamBelajar = 10f, colors = Mapel.mapelCardColor[4]),
+    )
+
     Scaffold (
         topBar = { HomeScreenTopBar() },
     ) { paddingValues ->
@@ -56,7 +69,7 @@ fun HomeScreen() {
             item {
                 MapelCardsSection(
                     modifier = Modifier.fillMaxWidth(),
-                    mapelList = emptyList()
+                    mapelList = mapel
                 )
             }
         }
@@ -147,5 +160,18 @@ private fun MapelCardsSection(
                 textAlign = TextAlign.Center
             )
         }
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(start = 12.dp, end = 12.dp)
+        ) {
+            items(mapelList) { mapel ->
+                MapelCard(
+                    mapelName = mapel.name,
+                    gradientColor = mapel.colors,
+                    onClick = {}
+                )
+            }
+        }
+
     }
 }
