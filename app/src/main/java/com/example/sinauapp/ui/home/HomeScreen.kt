@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -82,6 +83,7 @@ private fun CountCardSection(
     jamBelajar: String,
     totalJamBelajar: String
 ) {
+    Spacer(modifier = Modifier.height(10.dp))
     Row {
         CountCard(
             modifier = Modifier.weight(1f),
@@ -118,7 +120,7 @@ private fun MapelCardsSection(
             Text(
                 text = "Mata Pelajaran",
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(horizontal = 12.dp)
+                modifier = Modifier.padding(horizontal = 15.dp)
             )
             IconButton(onClick = {}) {
                 Icon(
@@ -130,11 +132,13 @@ private fun MapelCardsSection(
         if (mapelList.isEmpty()) {
             Image(
                 modifier = Modifier
+                    .padding(vertical = 10.dp)
                     .size(120.dp)
                     .align(Alignment.CenterHorizontally),
-            painter = painterResource(id = R.drawable.img_books),
-            contentDescription = emptyListText
+                painter = painterResource(id = R.drawable.img_books),
+                contentDescription = emptyListText
             )
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = emptyListText,
