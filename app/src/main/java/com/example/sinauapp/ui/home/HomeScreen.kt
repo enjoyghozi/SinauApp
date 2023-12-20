@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.sinauapp.R
 import com.example.sinauapp.domain.model.Mapel
+import com.example.sinauapp.domain.model.Session
 import com.example.sinauapp.domain.model.Task
 import com.example.sinauapp.ui.components.CountCard
 import com.example.sinauapp.ui.components.MapelCard
@@ -85,6 +86,37 @@ fun HomeScreen() {
         )
     )
 
+    val session = listOf(
+        Session(
+            sessionMapelId = 0,
+            relatedToMapel = "Matematika",
+            date = 0L,
+            duration = 2,
+            sessionId = 0
+        ),
+        Session(
+            sessionMapelId = 0,
+            relatedToMapel = "Bahasa Indonesia",
+            date = 0L,
+            duration = 2,
+            sessionId = 0
+        ),
+        Session(
+            sessionMapelId = 0,
+            relatedToMapel = "Bahasa Inggris",
+            date = 0L,
+            duration = 2,
+            sessionId = 0
+        ),
+        Session(
+            sessionMapelId = 0,
+            relatedToMapel = "IPA",
+            date = 0L,
+            duration = 2,
+            sessionId = 0
+        )
+    )
+
     Scaffold (
         topBar = { HomeScreenTopBar() },
     ) { paddingValues ->
@@ -131,11 +163,16 @@ fun HomeScreen() {
                 onTaskCardClick = {  }
             )
 
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+            
             studySessionList(
                 sectionTitle = "Waktu Belajar",
                 emptyListText = "Anda tidak memiliki sesi belajar.\n" +
                         "Klik tombol + di layar subjek untuk menambahkan waktu belajar baru.",
-                sessions = emptyList()
+                sessions = session,
+                onDeleteIconClick = { }
             )
         }
     }
