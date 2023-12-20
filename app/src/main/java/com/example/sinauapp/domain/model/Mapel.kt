@@ -9,7 +9,7 @@ import com.example.sinauapp.ui.theme.gradient5
 
 data class Mapel(
     val name: String,
-    val totalJamBelajar: Float,
+    val goalHours: Float,
     val colors: List<Color>,
     val mapelId: Int
 ) {

@@ -26,6 +26,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,7 +41,9 @@ import com.example.sinauapp.R
 import com.example.sinauapp.domain.model.Mapel
 import com.example.sinauapp.domain.model.Session
 import com.example.sinauapp.domain.model.Task
+import com.example.sinauapp.ui.components.AddMapelDialog
 import com.example.sinauapp.ui.components.CountCard
+import com.example.sinauapp.ui.components.DeleteDialog
 import com.example.sinauapp.ui.components.MapelCard
 import com.example.sinauapp.ui.components.studySessionList
 import com.example.sinauapp.ui.components.taskList
@@ -46,11 +53,11 @@ import com.example.sinauapp.ui.components.taskList
 fun HomeScreen() {
 
     val mapel = listOf(
-        Mapel(name = "Matematika", totalJamBelajar = 10f, colors = Mapel.mapelCardColor[0], mapelId = 0),
-        Mapel(name = "Bahasa Indonesia", totalJamBelajar = 10f, colors = Mapel.mapelCardColor[1], mapelId = 0),
-        Mapel(name = "Bahasa Inggris", totalJamBelajar = 10f, colors = Mapel.mapelCardColor[2], mapelId = 0),
-        Mapel(name = "IPA", totalJamBelajar = 10f, colors = Mapel.mapelCardColor[3], mapelId = 0),
-        Mapel(name = "IPS", totalJamBelajar = 10f, colors = Mapel.mapelCardColor[4], mapelId = 0),
+        Mapel(name = "Matematika", goalHours = 10f, colors = Mapel.mapelCardColor[0], mapelId = 0),
+        Mapel(name = "Bahasa Indonesia", goalHours = 10f, colors = Mapel.mapelCardColor[1], mapelId = 0),
+        Mapel(name = "Bahasa Inggris", goalHours = 10f, colors = Mapel.mapelCardColor[2], mapelId = 0),
+        Mapel(name = "IPA", goalHours = 10f, colors = Mapel.mapelCardColor[3], mapelId = 0),
+        Mapel(name = "IPS", goalHours = 10f, colors = Mapel.mapelCardColor[4], mapelId = 0),
     )
 
     val task = listOf(
@@ -117,6 +124,35 @@ fun HomeScreen() {
         )
     )
 
+    var isAddMapelDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
+
+    var mapelName by remember { mutableStateOf("") }
+    var goalHours by remember { mutableStateOf("") }
+    var selectedColor by remember { mutableStateOf(Mapel.mapelCardColor.random()) }
+
+    AddMapelDialog(
+        isOpen = isAddMapelDialogOpen,
+        selectedColors = selectedColor,
+        mapelName = mapelName,
+        goalHours = goalHours,
+        onMapelNameChange = { mapelName = it },
+        onGoalHoursChange = { goalHours = it },
+        onColorChange = { selectedColor = it },
+        onDismissRequest = { isAddMapelDialogOpen = false },
+        onConfirmButtonClick = {
+            isAddMapelDialogOpen = false
+        }
+    )
+    
+    DeleteDialog(
+        isOpen = isDeleteSessionDialogOpen,
+        title = "Hapus Sesi",
+        bodyText = "Apakah anda yakin ingin menghapus sesi ini? jam belajar Anda akan dikurangi dengan waktu sesi ini. Tindakan ini tidak bisa dibatalkan.",
+        onDismissRequest = { isDeleteSessionDialogOpen = false },
+        onConfirmButtonClick = { isDeleteSessionDialogOpen = false }
+    )
+
     Scaffold (
         topBar = { HomeScreenTopBar() },
     ) { paddingValues ->
@@ -139,7 +175,10 @@ fun HomeScreen() {
             item {
                 MapelCardsSection(
                     modifier = Modifier.fillMaxWidth(),
-                    mapelList = mapel
+                    mapelList = mapel,
+                    onAddIconClicked = {
+                        isAddMapelDialogOpen = true
+                    }
                 )
             }
 
@@ -170,9 +209,9 @@ fun HomeScreen() {
             studySessionList(
                 sectionTitle = "Waktu Belajar",
                 emptyListText = "Anda tidak memiliki sesi belajar.\n" +
-                        "Klik tombol + di layar subjek untuk menambahkan waktu belajar baru.",
+                        "Klik tombol + di layar mata pelajaran untuk menambahkan waktu belajar baru.",
                 sessions = session,
-                onDeleteIconClick = { }
+                onDeleteIconClick = { isDeleteSessionDialogOpen = true }
             )
         }
     }
@@ -224,7 +263,8 @@ private fun CountCardSection(
 private fun MapelCardsSection(
     modifier: Modifier,
     mapelList: List<Mapel>,
-    emptyListText: String = "Anda tidak memiliki mata pelajaran apa pun.\n Klik tombol + untuk menambahkan mata pelajaran baru."
+    emptyListText: String = "Anda tidak memiliki mata pelajaran apa pun.\n Klik tombol + untuk menambahkan mata pelajaran baru.",
+    onAddIconClicked: () -> Unit
 ) {
     Column(modifier = modifier) {
         Row (
@@ -237,7 +277,7 @@ private fun MapelCardsSection(
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 15.dp)
             )
-            IconButton(onClick = {}) {
+            IconButton(onClick = onAddIconClicked) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Tambah Mapel"
