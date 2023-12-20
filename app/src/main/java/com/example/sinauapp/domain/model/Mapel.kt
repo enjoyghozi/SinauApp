@@ -11,6 +11,7 @@ data class Mapel(
     val name: String,
     val totalJamBelajar: Float,
     val colors: List<Color>,
+    val mapelId: Int
 ) {
     companion object {
         val mapelCardColor = listOf(gradient1, gradient2, gradient3, gradient4, gradient5)
