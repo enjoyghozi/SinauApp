@@ -28,6 +28,12 @@ val pacificoFontFamily = FontFamily(
     )
 )
 
+val montserratFontFamily = FontFamily(
+    Font(googleFont = GoogleFont("Montserrat"),
+        fontProvider = provider
+    )
+)
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     displayLarge = TextStyle(
@@ -67,21 +73,21 @@ val Typography = Typography(
         lineHeight = 32.sp
     ),
     titleLarge = TextStyle(
-        fontFamily = robotoFontFamily,
+        fontFamily = montserratFontFamily,
         fontWeight = FontWeight.W500,
         fontSize = 22.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.5.sp
     ),
     titleMedium = TextStyle(
-        fontFamily = robotoFontFamily,
-        fontWeight = FontWeight.W500,
+        fontFamily = montserratFontFamily,
+        fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
     titleSmall = TextStyle(
-        fontFamily = robotoFontFamily,
+        fontFamily = montserratFontFamily,
         fontWeight = FontWeight.W500,
         fontSize = 14.sp,
         lineHeight = 20.sp,
@@ -128,5 +134,5 @@ val Typography = Typography(
         fontSize = 11.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
-    )
+    ),
 )
