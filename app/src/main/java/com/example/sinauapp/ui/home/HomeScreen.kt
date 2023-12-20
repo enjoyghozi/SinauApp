@@ -37,6 +37,7 @@ import com.example.sinauapp.domain.model.Mapel
 import com.example.sinauapp.domain.model.Task
 import com.example.sinauapp.ui.components.CountCard
 import com.example.sinauapp.ui.components.MapelCard
+import com.example.sinauapp.ui.components.studySessionList
 import com.example.sinauapp.ui.components.taskList
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,6 +129,13 @@ fun HomeScreen() {
                 tasks = task,
                 onCheckBoxClick = {  },
                 onTaskCardClick = {  }
+            )
+
+            studySessionList(
+                sectionTitle = "Waktu Belajar",
+                emptyListText = "Anda tidak memiliki sesi belajar.\n" +
+                        "Klik tombol + di layar subjek untuk menambahkan waktu belajar baru.",
+                sessions = emptyList()
             )
         }
     }
