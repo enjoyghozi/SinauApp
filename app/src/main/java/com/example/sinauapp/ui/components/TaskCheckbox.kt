@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 fun TaskCheckbox(
     isStatus: Boolean,
     borderColor: Color,
-    onCheckboxClick: () -> Unit
+    onCheckBoxClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -28,7 +28,7 @@ fun TaskCheckbox(
             .clip(CircleShape)
             .border(2.dp, borderColor, CircleShape)
             .clickable {
-                onCheckboxClick()
+                onCheckBoxClick()
             },
         contentAlignment = Alignment.Center
     ) {
