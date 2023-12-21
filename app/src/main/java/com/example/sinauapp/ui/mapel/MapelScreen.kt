@@ -31,16 +31,22 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.sinauapp.domain.model.Mapel
 import com.example.sinauapp.sessions
 import com.example.sinauapp.tasks
+import com.example.sinauapp.ui.components.AddMapelDialog
 import com.example.sinauapp.ui.components.CountCard
+import com.example.sinauapp.ui.components.DeleteDialog
 import com.example.sinauapp.ui.components.studySessionList
 import com.example.sinauapp.ui.components.taskList
 
@@ -53,14 +59,52 @@ fun MapelScreen() {
     val listState = rememberLazyListState()
     val isFABExpanded by remember { derivedStateOf { listState.firstVisibleItemIndex == 0 } }
 
+    var isEditMapelDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isDeleteMapelDialogOpen by rememberSaveable { mutableStateOf(false) }
+
+    var mapelName by remember { mutableStateOf("") }
+    var goalHours by remember { mutableStateOf("") }
+    var selectedColor by remember { mutableStateOf(Mapel.mapelCardColor.random()) }
+
+    AddMapelDialog(
+        isOpen = isEditMapelDialogOpen,
+        selectedColors = selectedColor,
+        mapelName = mapelName,
+        goalHours = goalHours,
+        onMapelNameChange = { mapelName = it },
+        onGoalHoursChange = { goalHours = it },
+        onColorChange = { selectedColor = it },
+        onDismissRequest = { isEditMapelDialogOpen = false },
+        onConfirmButtonClick = {
+            isEditMapelDialogOpen = false
+        }
+    )
+
+    DeleteDialog(
+        isOpen = isDeleteMapelDialogOpen,
+        title = "Hapus Mapel",
+        bodyText = "Apakah anda yakin ingin menghapus sesi ini? tugas dan jam belajar Anda akan dihapus secara Permanen. Tindakan ini tidak bisa dibatalkan.",
+        onDismissRequest = { isDeleteMapelDialogOpen = false },
+        onConfirmButtonClick = { isDeleteMapelDialogOpen = false }
+    )
+
+    DeleteDialog(
+        isOpen = isDeleteSessionDialogOpen,
+        title = "Hapus Sesi",
+        bodyText = "Apakah anda yakin ingin menghapus sesi ini? jam belajar Anda akan dikurangi dengan waktu sesi ini. Tindakan ini tidak bisa dibatalkan.",
+        onDismissRequest = { isDeleteSessionDialogOpen = false },
+        onConfirmButtonClick = { isDeleteSessionDialogOpen = false }
+    )
+
     Scaffold (
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             MapelScreenTopBar(
                 title = "Bahasa Indonesia",
                 onBackButtonClick = {},
-                onDeleteButtonClick = {},
-                onEditButtonClick = {},
+                onDeleteButtonClick = { isDeleteMapelDialogOpen = true },
+                onEditButtonClick = { isEditMapelDialogOpen = true },
                 scrollBehavior = scrollBehavior
             )
         },
@@ -117,7 +161,7 @@ fun MapelScreen() {
                 emptyListText = "Anda tidak memiliki sesi belajar.\n" +
                         "Klik tombol + di layar mata pelajaran untuk menambahkan waktu belajar baru.",
                 sessions = sessions,
-                onDeleteIconClick = {  }
+                onDeleteIconClick = { isDeleteSessionDialogOpen = true }
             )
         }
     }
