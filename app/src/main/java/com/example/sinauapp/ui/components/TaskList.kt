@@ -95,7 +95,7 @@ private fun TaskCard(
             TaskCheckbox(
                 isStatus = task.isStatus,
                 borderColor = Priority.fromInt(task.priority).color,
-                onCheckboxClick = onCheckBoxClick
+                onCheckBoxClick = onCheckBoxClick
             )
             Spacer(modifier = Modifier.width(10.dp))
             Column {
