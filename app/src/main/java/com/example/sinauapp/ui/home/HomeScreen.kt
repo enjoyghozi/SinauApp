@@ -41,6 +41,9 @@ import com.example.sinauapp.R
 import com.example.sinauapp.domain.model.Mapel
 import com.example.sinauapp.domain.model.Session
 import com.example.sinauapp.domain.model.Task
+import com.example.sinauapp.mapel
+import com.example.sinauapp.sessions
+import com.example.sinauapp.tasks
 import com.example.sinauapp.ui.components.AddMapelDialog
 import com.example.sinauapp.ui.components.CountCard
 import com.example.sinauapp.ui.components.DeleteDialog
@@ -51,78 +54,6 @@ import com.example.sinauapp.ui.components.taskList
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
-
-    val mapel = listOf(
-        Mapel(name = "Matematika", goalHours = 10f, colors = Mapel.mapelCardColor[0], mapelId = 0),
-        Mapel(name = "Bahasa Indonesia", goalHours = 10f, colors = Mapel.mapelCardColor[1], mapelId = 0),
-        Mapel(name = "Bahasa Inggris", goalHours = 10f, colors = Mapel.mapelCardColor[2], mapelId = 0),
-        Mapel(name = "IPA", goalHours = 10f, colors = Mapel.mapelCardColor[3], mapelId = 0),
-        Mapel(name = "IPS", goalHours = 10f, colors = Mapel.mapelCardColor[4], mapelId = 0),
-    )
-
-    val task = listOf(
-        Task(
-            title = "Belajar Matematika",
-            description = "",
-            dueDate = 0L,
-            priority = 1,
-            relatedToMapel = "Matematika",
-            isStatus = true,
-            taskMapelId = 0,
-            taskId = 1
-        ),
-        Task(
-            title = "Belajar Bahasa Indonesia",
-            description = "",
-            dueDate = 0L,
-            priority = 0,
-            relatedToMapel = "Bahasa Indonesia",
-            isStatus = false,
-            taskMapelId = 0,
-            taskId = 1
-        ),
-        Task(
-            title = "Belajar Bahasa Inggris",
-            description = "",
-            dueDate = 0L,
-            priority = 2,
-            relatedToMapel = "Bahasa Inggris",
-            isStatus = false,
-            taskMapelId = 0,
-            taskId = 1
-        )
-    )
-
-    val session = listOf(
-        Session(
-            sessionMapelId = 0,
-            relatedToMapel = "Matematika",
-            date = 0L,
-            duration = 2,
-            sessionId = 0
-        ),
-        Session(
-            sessionMapelId = 0,
-            relatedToMapel = "Bahasa Indonesia",
-            date = 0L,
-            duration = 2,
-            sessionId = 0
-        ),
-        Session(
-            sessionMapelId = 0,
-            relatedToMapel = "Bahasa Inggris",
-            date = 0L,
-            duration = 2,
-            sessionId = 0
-        ),
-        Session(
-            sessionMapelId = 0,
-            relatedToMapel = "IPA",
-            date = 0L,
-            duration = 2,
-            sessionId = 0
-        )
-    )
 
     var isAddMapelDialogOpen by rememberSaveable { mutableStateOf(false) }
     var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
@@ -194,10 +125,10 @@ fun HomeScreen() {
             }
 
             taskList(
-                sectionTitle = "Pelajaran Mendatang",
+                sectionTitle = "Tugas Mendatang",
                 emptyListText = "Anda tidak memiliki tugas mendatang.\n" +
                         "Klik tombol + di layar subjek untuk menambahkan tugas baru.",
-                tasks = task,
+                tasks = tasks,
                 onCheckBoxClick = {  },
                 onTaskCardClick = {  }
             )
@@ -210,7 +141,7 @@ fun HomeScreen() {
                 sectionTitle = "Waktu Belajar",
                 emptyListText = "Anda tidak memiliki sesi belajar.\n" +
                         "Klik tombol + di layar mata pelajaran untuk menambahkan waktu belajar baru.",
-                sessions = session,
+                sessions = sessions,
                 onDeleteIconClick = { isDeleteSessionDialogOpen = true }
             )
         }
