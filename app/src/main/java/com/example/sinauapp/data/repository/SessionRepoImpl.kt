@@ -31,7 +31,7 @@ class SessionRepoImpl @Inject constructor(
     }
 
     override fun getTotalSessionsDuration(): Flow<Long> {
-        TODO("Not yet implemented")
+        return sessionDao.getTotalSessionsDuration()
     }
 
     override fun getTotalSessionsDurationByMapelId(mapelId: Int): Flow<Long> {

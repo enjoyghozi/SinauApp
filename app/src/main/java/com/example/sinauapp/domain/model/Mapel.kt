@@ -18,6 +18,6 @@ data class Mapel(
     val mapelId: Int? = null
 ) {
     companion object {
-        val mapelCardColor = listOf(gradient1, gradient2, gradient3, gradient4, gradient5)
+        val mapelCardColors = listOf(gradient1, gradient2, gradient3, gradient4, gradient5)
     }
 }

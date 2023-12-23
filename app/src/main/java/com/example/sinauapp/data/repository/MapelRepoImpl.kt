@@ -13,11 +13,11 @@ class MapelRepoImpl(
     }
 
     override fun getTotalMapelCount(): Flow<Int> {
-        TODO("Not yet implemented")
+        return mapelDao.getTotalMapelCount()
     }
 
     override fun getTotalGoalHours(): Flow<Float> {
-        TODO("Not yet implemented")
+        return mapelDao.getTotalGoalHours()
     }
 
     override suspend fun deleteMapel(mapelInt: Int) {
@@ -28,7 +28,7 @@ class MapelRepoImpl(
         TODO("Not yet implemented")
     }
 
-    override fun getAllMapels(): Flow<List<Mapel>> {
-        TODO("Not yet implemented")
+    override fun getAllMapel(): Flow<List<Mapel>> {
+        return mapelDao.getAllMapel()
     }
 }

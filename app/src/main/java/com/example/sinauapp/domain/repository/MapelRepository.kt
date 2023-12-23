@@ -15,5 +15,5 @@ interface MapelRepository {
 
     suspend fun getMapelById(mapelInt: Int): Mapel?
 
-    fun getAllMapels(): Flow<List<Mapel>>
+    fun getAllMapel(): Flow<List<Mapel>>
 }

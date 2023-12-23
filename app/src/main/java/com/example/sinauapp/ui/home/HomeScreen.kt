@@ -37,6 +37,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sinauapp.R
 import com.example.sinauapp.domain.model.Mapel
 import com.example.sinauapp.domain.model.Session
@@ -66,7 +68,11 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 fun HomeScreenRoute(
     navigator: DestinationsNavigator
 ) {
+    val viewModel: HomeViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
     HomeScreen(
+        state = state,
         onMapelCardClick = { mapelId ->
             mapelId?.let {
                 val navArg = MapelScreenNavArgs(mapelId = mapelId)
@@ -84,6 +90,7 @@ fun HomeScreenRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(
+    state: HomeState,
     onMapelCardClick: (Int?) -> Unit = {},
     onTaskCardClick: (Int?) -> Unit = {},
     onStartSessionButtonClick: () -> Unit = {},
@@ -93,20 +100,15 @@ private fun HomeScreen(
     var isAddMapelDialogOpen by rememberSaveable { mutableStateOf(false) }
     var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
 
-    /* Variables for content Add/Update Dialog */
-    var mapelName by remember { mutableStateOf("") }
-    var goalHours by remember { mutableStateOf("") }
-    var selectedColor by remember { mutableStateOf(Mapel.mapelCardColor.random()) }
-
     /* Add Mapel Dialog */
     AddMapelDialog(
         isOpen = isAddMapelDialogOpen,
-        selectedColors = selectedColor,
-        mapelName = mapelName,
-        goalHours = goalHours,
-        onMapelNameChange = { mapelName = it },
-        onGoalHoursChange = { goalHours = it },
-        onColorChange = { selectedColor = it },
+        selectedColors = state.mapelCardColors,
+        mapelName = state.mapelName,
+        goalHours = state.goalStudyHours,
+        onMapelNameChange = {  },
+        onGoalHoursChange = {  },
+        onColorChange = {  },
         onDismissRequest = { isAddMapelDialogOpen = false },
         onConfirmButtonClick = {
             isAddMapelDialogOpen = false
@@ -137,9 +139,9 @@ private fun HomeScreen(
                     modifier = Modifier
                         .padding(12.dp)
                         .fillMaxSize(),
-                    totalMapel = 5,
-                    jamBelajar = "10",
-                    totalJamBelajar = "20"
+                    totalMapel = state.totalMapelCount,
+                    jamBelajar = state.totalStudiedHours.toString(),
+                    totalJamBelajar = state.totalGoalStudyHours.toString(),
                 )
             }
 
@@ -147,7 +149,7 @@ private fun HomeScreen(
             item {
                 MapelCardsSection(
                     modifier = Modifier.fillMaxWidth(),
-                    mapelList = mapel,
+                    mapelList = state.mapel,
                     onAddIconClicked = {
                         isAddMapelDialogOpen = true
                     },
