@@ -12,9 +12,9 @@ import com.example.sinauapp.domain.model.Task
     version = 1
 )
 @TypeConverters(ColorListConverter::class)
-abstract class Database: RoomDatabase() {
+abstract class AppDatabase: RoomDatabase() {
 
-    abstract fun subjectDao(): MapelDao
+    abstract fun mapelDao(): MapelDao
     abstract fun taskDao(): TaskDao
     abstract fun sessionDao(): SessionDao
 }
