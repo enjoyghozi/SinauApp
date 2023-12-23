@@ -50,6 +50,7 @@ class HomeViewModel @Inject constructor(
         initialValue = HomeState()
     )
 
+    /* Task List (Catatan Tugas) */
     val tasks: StateFlow<List<Task>> = taskRepository.getAllUpcomingTasks()
         .stateIn(
             scope = viewModelScope,
@@ -57,6 +58,7 @@ class HomeViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
+    /* Recent Sessions */
     val recentSessions: StateFlow<List<Session>> = sessionRepository.getRecentFiveSessions()
         .stateIn(
             scope = viewModelScope,
@@ -113,15 +115,39 @@ class HomeViewModel @Inject constructor(
             /* Event for Save Mapel */
             HomeEvent.SaveMapel -> saveMapel()
 
+            /* Event for Delete Session */
             HomeEvent.DeleteSession -> TODO()
 
+            /* Event for Task isComplete */
             is HomeEvent.OnTaskIsCompleteChange -> {
-                TODO()
+                updateTask(event.task)
             }
 
         }
     }
 
+    /* Function for Update Task to Completed */
+    private fun updateTask(task: Task) {
+        viewModelScope.launch {
+            try {
+                taskRepository.upsertTask(
+                    task = task.copy(isStatus = !task.isStatus)
+                )
+                _snackbarEventFlow.emit(
+                    SnackbarEvent.ShowSnackbar(message = "Saved in completed tasks.")
+                )
+            } catch (e: Exception) {
+                _snackbarEventFlow.emit(
+                    SnackbarEvent.ShowSnackbar(
+                        "Couldn't update task. ${e.message}",
+                        SnackbarDuration.Long
+                    )
+                )
+            }
+        }
+    }
+
+    /* Function for Save Mapel */
     private fun saveMapel() {
         viewModelScope.launch {
             try {
