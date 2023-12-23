@@ -50,6 +50,7 @@ import com.example.sinauapp.ui.components.TaskDatePicker
 import com.example.sinauapp.utility.Priority
 import com.example.sinauapp.utility.changeMillisToDateString
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 import java.time.Instant
 
@@ -61,13 +62,21 @@ data class TaskScreenNavArgs(
 /* Route */
 @Destination(navArgsDelegate = TaskScreenNavArgs::class)
 @Composable
-fun TaskScreenRoute() {
-    TaskScreen()
+fun TaskScreenRoute(
+    navigator: DestinationsNavigator
+) {
+    TaskScreen(
+        onBackButtonClick = {
+            navigator.navigateUp()
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TaskScreen() {
+private fun TaskScreen(
+    onBackButtonClick: () -> Unit
+) {
 
     /* Variables */
     var isDeleteDialogOpen by remember { mutableStateOf(false) }
@@ -138,7 +147,7 @@ private fun TaskScreen() {
                 isTaskExist = true,
                 isStatus = false,
                 checkBoxBorderColor = Color.Red,
-                onBackButtonClick = {},
+                onBackButtonClick = onBackButtonClick,
                 onDeleteButtonClick = { isDeleteDialogOpen = true },
                 onCheckBoxClick = {}
             )

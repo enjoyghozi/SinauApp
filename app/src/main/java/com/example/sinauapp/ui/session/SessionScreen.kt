@@ -39,18 +39,25 @@ import com.example.sinauapp.ui.components.DeleteDialog
 import com.example.sinauapp.ui.components.MapelListBottomSheet
 import com.example.sinauapp.ui.components.studySessionList
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
 /* Route */
 @Destination
 @Composable
-fun SessionScreenRoute() {
-    SessionScreen()
-}
+fun SessionScreenRoute(
+        navigator: DestinationsNavigator
+    ) {
+        SessionScreen(
+            onBackButtonClick = { navigator.navigateUp() }
+        )
+    }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SessionScreen() {
+private fun SessionScreen(
+    onBackButtonClick: () -> Unit
+) {
 
     /* Variables */
     val scope = rememberCoroutineScope()
@@ -90,7 +97,7 @@ private fun SessionScreen() {
     /* Load Content */
     Scaffold(
         topBar = {
-            sessionScreenTopBar(onBackButtonClicked = {})
+            sessionScreenTopBar(onBackButtonClicked = onBackButtonClick)
         }
     ) { paddingValues ->
         LazyColumn(
