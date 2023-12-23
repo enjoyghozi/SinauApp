@@ -156,6 +156,10 @@ fun MapelScreen() {
                 onTaskCardClick = {  }
             )
 
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+            
             studySessionList(
                 sectionTitle = "Waktu Belajar",
                 emptyListText = "Anda tidak memiliki sesi belajar.\n" +
