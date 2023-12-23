@@ -49,11 +49,43 @@ import com.example.sinauapp.ui.components.CountCard
 import com.example.sinauapp.ui.components.DeleteDialog
 import com.example.sinauapp.ui.components.studySessionList
 import com.example.sinauapp.ui.components.taskList
+import com.example.sinauapp.ui.destinations.TaskScreenRouteDestination
+import com.example.sinauapp.ui.task.TaskScreenNavArgs
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+
+data class MapelScreenNavArgs(
+    val mapelId: Int
+)
+
+/* Route */
+@Destination(navArgsDelegate = MapelScreenNavArgs::class)
+@Composable
+fun MapelScreenRoute(
+    navigator: DestinationsNavigator,
+) {
+    MapelScreen(
+        onBackButtonClick = { navigator.navigateUp()},
+        onAddTaskButtonClick = {
+            val navArg = TaskScreenNavArgs(taskId = null, mapelId = -1)
+            navigator.navigate(TaskScreenRouteDestination(navArgs = navArg))
+        },
+        onTaskCardClick = { taskId ->
+            val navArg = TaskScreenNavArgs(taskId = taskId, mapelId = null)
+            navigator.navigate(TaskScreenRouteDestination(navArgs = navArg))
+        }
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MapelScreen() {
+private fun MapelScreen(
+    onBackButtonClick: () -> Unit,
+    onAddTaskButtonClick: () -> Unit,
+    onTaskCardClick: (Int?) -> Unit
+) {
 
+    /* Variables*/
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     val listState = rememberLazyListState()
@@ -67,6 +99,7 @@ fun MapelScreen() {
     var goalHours by remember { mutableStateOf("") }
     var selectedColor by remember { mutableStateOf(Mapel.mapelCardColor.random()) }
 
+    /* Add Mapel Dialog */
     AddMapelDialog(
         isOpen = isEditMapelDialogOpen,
         selectedColors = selectedColor,
@@ -81,6 +114,7 @@ fun MapelScreen() {
         }
     )
 
+    /*  Delete Mapel Dialog */
     DeleteDialog(
         isOpen = isDeleteMapelDialogOpen,
         title = "Hapus Mapel",
@@ -89,6 +123,7 @@ fun MapelScreen() {
         onConfirmButtonClick = { isDeleteMapelDialogOpen = false }
     )
 
+    /*  Delete Session Dialog */
     DeleteDialog(
         isOpen = isDeleteSessionDialogOpen,
         title = "Hapus Sesi",
@@ -97,20 +132,25 @@ fun MapelScreen() {
         onConfirmButtonClick = { isDeleteSessionDialogOpen = false }
     )
 
+    /* Load Content */
     Scaffold (
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+
+        /* Top Bar */
         topBar = {
             MapelScreenTopBar(
                 title = "Bahasa Indonesia",
-                onBackButtonClick = {},
+                onBackButtonClick = onBackButtonClick,
                 onDeleteButtonClick = { isDeleteMapelDialogOpen = true },
                 onEditButtonClick = { isEditMapelDialogOpen = true },
                 scrollBehavior = scrollBehavior
             )
         },
+
+        /* Floating Action Button Extended */
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = { /*TODO*/ },
+                onClick = onAddTaskButtonClick,
                 icon = { Icon(imageVector = Icons.Default.Add, contentDescription = "Add") },
                 text = { Text(text = "Add Task") },
                 expanded = isFABExpanded
@@ -123,6 +163,9 @@ fun MapelScreen() {
                 .fillMaxSize()
                 .padding(paddingValue)
         ) {
+            /* Load Content */
+
+            /* Mapel Overview */
             item {
                 MapelOverviewSection(
                     modifier = Modifier
@@ -134,32 +177,35 @@ fun MapelScreen() {
                 )
             }
 
+            /* TaskList */
             taskList(
                 sectionTitle = "Tugas Mendatang",
                 emptyListText = "Anda tidak memiliki tugas mendatang.\n" +
                         "Klik tombol + di layar subjek untuk menambahkan tugas baru.",
                 tasks = tasks,
                 onCheckBoxClick = {  },
-                onTaskCardClick = {  }
+                onTaskCardClick = onTaskCardClick
             )
 
             item {
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
+            /* History Task */
             taskList(
                 sectionTitle = "Riwayat Tugas",
                 emptyListText = "Anda tidak memiliki tugas mendatang.\n" +
                         "Klik tombol + di layar subjek untuk menambahkan tugas baru.",
                 tasks = tasks,
                 onCheckBoxClick = {  },
-                onTaskCardClick = {  }
+                onTaskCardClick = onTaskCardClick
             )
 
             item {
                 Spacer(modifier = Modifier.height(20.dp))
             }
-            
+
+            /* Study Session */
             studySessionList(
                 sectionTitle = "Waktu Belajar",
                 emptyListText = "Anda tidak memiliki sesi belajar.\n" +
@@ -171,6 +217,9 @@ fun MapelScreen() {
     }
 }
 
+/* Mapel Screen Content */
+
+/* Top Bar */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MapelScreenTopBar(
@@ -215,6 +264,7 @@ private fun MapelScreenTopBar(
     )
 }
 
+/* Mapel Overview Section */
 @Composable
 private fun MapelOverviewSection(
     modifier: Modifier,

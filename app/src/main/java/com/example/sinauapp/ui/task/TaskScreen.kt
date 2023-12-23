@@ -49,12 +49,27 @@ import com.example.sinauapp.ui.components.TaskCheckbox
 import com.example.sinauapp.ui.components.TaskDatePicker
 import com.example.sinauapp.utility.Priority
 import com.example.sinauapp.utility.changeMillisToDateString
+import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.launch
 import java.time.Instant
 
+data class TaskScreenNavArgs(
+    val taskId: Int?,
+    val mapelId: Int?
+)
+
+/* Route */
+@Destination(navArgsDelegate = TaskScreenNavArgs::class)
+@Composable
+fun TaskScreenRoute() {
+    TaskScreen()
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskScreen() {
+private fun TaskScreen() {
+
+    /* Variables */
     var isDeleteDialogOpen by remember { mutableStateOf(false) }
 
     var isDatePickerDialogOpen by rememberSaveable { mutableStateOf(false) }
@@ -70,6 +85,7 @@ fun TaskScreen() {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
+    /* Form Validation */
     var taskTitleError by remember { mutableStateOf<String?>(null) }
     taskTitleError = when {
         title.isBlank() -> "Silahkan isi judul tugas"
@@ -78,6 +94,7 @@ fun TaskScreen() {
         else -> null
     }
 
+    /* Delete Dialog */
     DeleteDialog(
         isOpen = isDeleteDialogOpen,
         title = "Hapus Task?",
@@ -88,6 +105,7 @@ fun TaskScreen() {
         }
     )
 
+    /* Date Picker */
     TaskDatePicker(
         state = datePickerState,
         isOpen = isDatePickerDialogOpen,
@@ -97,6 +115,7 @@ fun TaskScreen() {
         }
     )
 
+    /* Mapel Bottom Sheet */
     MapelListBottomSheet(
         sheetState = sheetState,
         isOpen = isBottomSheetOpen,
@@ -112,6 +131,7 @@ fun TaskScreen() {
         }
     )
 
+    /* Load Content */
     Scaffold (
         topBar =  {
             TaskScreenTopBar(
@@ -131,6 +151,8 @@ fun TaskScreen() {
                 .padding(paddingValue)
                 .padding(horizontal = 12.dp)
         ) {
+
+            /* Text Field Judul */
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = title,
@@ -144,7 +166,10 @@ fun TaskScreen() {
                     Text(text = taskTitleError.orEmpty())
                 }
             )
+
             Spacer(modifier = Modifier.height(10.dp))
+
+            /* Text Field Keterangan */
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = description,
@@ -153,7 +178,10 @@ fun TaskScreen() {
                     Text(text = "Keterangan")
                 }
             )
+
             Spacer(modifier = Modifier.height(20.dp))
+
+            /* Datepicker Tanggal */
             Text(
                 text = "Tanggal",
                 style = MaterialTheme.typography.bodySmall
@@ -174,7 +202,10 @@ fun TaskScreen() {
                     )
                 }
             }
+
             Spacer(modifier = Modifier.height(10.dp))
+
+            /* Color for Prioritas */
             Text(
                 text = "Prioritas",
                 style = MaterialTheme.typography.bodySmall
@@ -196,7 +227,10 @@ fun TaskScreen() {
                     )
                 }
             }
+
             Spacer(modifier = Modifier.height(30.dp))
+
+            /* Bottom Sheet Mata Pelajaran */
             Text(
                 text = "Mata Pelajaran",
                 style = MaterialTheme.typography.bodySmall
@@ -230,6 +264,9 @@ fun TaskScreen() {
     }
 }
 
+/* Content */
+
+/* Top Bar */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TaskScreenTopBar(
@@ -274,6 +311,7 @@ private fun TaskScreenTopBar(
     )
 }
 
+/* Priority Button */
 @Composable
 private fun PriorityButton(
     modifier: Modifier = Modifier,

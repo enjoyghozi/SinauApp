@@ -6,21 +6,16 @@ import androidx.activity.compose.setContent
 import com.example.sinauapp.domain.model.Mapel
 import com.example.sinauapp.domain.model.Session
 import com.example.sinauapp.domain.model.Task
-import com.example.sinauapp.ui.home.HomeScreen
-import com.example.sinauapp.ui.mapel.MapelScreen
-import com.example.sinauapp.ui.session.SessionScreen
-import com.example.sinauapp.ui.task.TaskScreen
+import com.example.sinauapp.ui.NavGraphs
 import com.example.sinauapp.ui.theme.SinauAppTheme
+import com.ramcosta.composedestinations.DestinationsNavHost
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             SinauAppTheme {
-//                HomeScreen()
-//                MapelScreen()
-//                TaskScreen()
-                SessionScreen()
+                DestinationsNavHost(navGraph = NavGraphs.root)
             }
         }
     }

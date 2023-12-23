@@ -38,12 +38,21 @@ import com.example.sinauapp.sessions
 import com.example.sinauapp.ui.components.DeleteDialog
 import com.example.sinauapp.ui.components.MapelListBottomSheet
 import com.example.sinauapp.ui.components.studySessionList
+import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.launch
+
+/* Route */
+@Destination
+@Composable
+fun SessionScreenRoute() {
+    SessionScreen()
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SessionScreen() {
+private fun SessionScreen() {
 
+    /* Variables */
     val scope = rememberCoroutineScope()
 
     val sheetState = rememberModalBottomSheetState()
@@ -51,6 +60,7 @@ fun SessionScreen() {
 
     var isDeleteDialogOpen by remember { mutableStateOf(false) }
 
+    /* Bottom Sheet Mapel */
     MapelListBottomSheet(
         sheetState = sheetState,
         isOpen = isBottomSheetOpen,
@@ -66,6 +76,7 @@ fun SessionScreen() {
         }
     )
 
+    /* Delete Dialog */
     DeleteDialog(
         isOpen = isDeleteDialogOpen,
         title = "Hapus Sesi?",
@@ -76,6 +87,7 @@ fun SessionScreen() {
         }
     )
 
+    /* Load Content */
     Scaffold(
         topBar = {
             sessionScreenTopBar(onBackButtonClicked = {})
@@ -86,6 +98,7 @@ fun SessionScreen() {
                 .fillMaxWidth()
                 .padding(paddingValues)
         ) {
+            /* Timer */
             item {
                 timerSection(
                     modifier = Modifier
@@ -94,6 +107,7 @@ fun SessionScreen() {
                 )
             }
 
+            /* Mata Pelajaran */
             item {
                 relatedToMapelSection(
                     modifier = Modifier
@@ -106,6 +120,7 @@ fun SessionScreen() {
                 )
             }
 
+            /* Timer Button */
             item {
                 timerButtonSection(
                     modifier = Modifier
@@ -117,6 +132,7 @@ fun SessionScreen() {
                 )
             }
 
+            /* Study Session */
             studySessionList(
                 sectionTitle = "Waktu Belajar",
                 emptyListText = "Anda tidak memiliki sesi belajar.\n" +
@@ -130,6 +146,9 @@ fun SessionScreen() {
     }
 }
 
+/* Content */
+
+/* Top Bar */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun sessionScreenTopBar(
@@ -153,6 +172,7 @@ private fun sessionScreenTopBar(
     )
 }
 
+/* TimerSection */
 @Composable
 private fun timerSection(
     modifier: Modifier
@@ -173,6 +193,7 @@ private fun timerSection(
     }
 }
 
+/* Related To Mapel Section */
 @Composable
 private fun relatedToMapelSection(
     modifier: Modifier,
@@ -203,6 +224,7 @@ private fun relatedToMapelSection(
     }
 }
 
+/* Timer Button */
 @Composable
 private fun timerButtonSection(
     modifier: Modifier,

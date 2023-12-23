@@ -50,18 +50,55 @@ import com.example.sinauapp.ui.components.DeleteDialog
 import com.example.sinauapp.ui.components.MapelCard
 import com.example.sinauapp.ui.components.studySessionList
 import com.example.sinauapp.ui.components.taskList
+import com.example.sinauapp.ui.destinations.MapelScreenRouteDestination
+import com.example.sinauapp.ui.destinations.SessionScreenRouteDestination
+import com.example.sinauapp.ui.destinations.TaskScreenRouteDestination
+import com.example.sinauapp.ui.mapel.MapelScreenNavArgs
+import com.example.sinauapp.ui.task.TaskScreenNavArgs
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+
+/* Route */
+@RootNavGraph(start = true)
+@Destination
+@Composable
+fun HomeScreenRoute(
+    navigator: DestinationsNavigator
+) {
+    HomeScreen(
+        onMapelCardClick = { mapelId ->
+            mapelId?.let {
+                val navArg = MapelScreenNavArgs(mapelId = mapelId)
+                navigator.navigate(MapelScreenRouteDestination(navArgs = navArg))
+            }},
+        onTaskCardClick = { taskId ->
+            val navArg = TaskScreenNavArgs(taskId = taskId, mapelId = null)
+            navigator.navigate(TaskScreenRouteDestination(navArgs = navArg))},
+        onStartSessionButtonClick = {
+            navigator.navigate(SessionScreenRouteDestination())
+        },
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+private fun HomeScreen(
+    onMapelCardClick: (Int?) -> Unit = {},
+    onTaskCardClick: (Int?) -> Unit = {},
+    onStartSessionButtonClick: () -> Unit = {},
+) {
 
+    /* Variables for Dialog */
     var isAddMapelDialogOpen by rememberSaveable { mutableStateOf(false) }
     var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
 
+    /* Variables for content Add/Update Dialog */
     var mapelName by remember { mutableStateOf("") }
     var goalHours by remember { mutableStateOf("") }
     var selectedColor by remember { mutableStateOf(Mapel.mapelCardColor.random()) }
 
+    /* Add Mapel Dialog */
     AddMapelDialog(
         isOpen = isAddMapelDialogOpen,
         selectedColors = selectedColor,
@@ -75,7 +112,8 @@ fun HomeScreen() {
             isAddMapelDialogOpen = false
         }
     )
-    
+
+    /* Delete Session Dialog */
     DeleteDialog(
         isOpen = isDeleteSessionDialogOpen,
         title = "Hapus Sesi",
@@ -84,6 +122,7 @@ fun HomeScreen() {
         onConfirmButtonClick = { isDeleteSessionDialogOpen = false }
     )
 
+    /* Load Content */
     Scaffold (
         topBar = { HomeScreenTopBar() },
     ) { paddingValues ->
@@ -92,6 +131,7 @@ fun HomeScreen() {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            /* Count Card */
             item {
                 CountCardSection(
                     modifier = Modifier
@@ -103,19 +143,22 @@ fun HomeScreen() {
                 )
             }
 
+            /* Mapel Card Section */
             item {
                 MapelCardsSection(
                     modifier = Modifier.fillMaxWidth(),
                     mapelList = mapel,
                     onAddIconClicked = {
                         isAddMapelDialogOpen = true
-                    }
+                    },
+                    onMapelCardClick = onMapelCardClick
                 )
             }
 
+            /* Button Start */
             item {
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = onStartSessionButtonClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 48.dp, vertical = 20.dp),
@@ -124,19 +167,21 @@ fun HomeScreen() {
                 }
             }
 
+            /* TaskList (List Tugas Mendatang) */
             taskList(
                 sectionTitle = "Tugas Mendatang",
                 emptyListText = "Anda tidak memiliki tugas mendatang.\n" +
                         "Klik tombol + di layar subjek untuk menambahkan tugas baru.",
                 tasks = tasks,
                 onCheckBoxClick = {  },
-                onTaskCardClick = {  }
+                onTaskCardClick = onTaskCardClick
             )
 
             item {
                 Spacer(modifier = Modifier.height(20.dp))
             }
-            
+
+            /* StudySessionList  */
             studySessionList(
                 sectionTitle = "Waktu Belajar",
                 emptyListText = "Anda tidak memiliki sesi belajar.\n" +
@@ -148,6 +193,9 @@ fun HomeScreen() {
     }
 }
 
+/* Home Screen Content */
+
+/* Top Bar */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreenTopBar() {
@@ -161,6 +209,7 @@ private fun HomeScreenTopBar() {
     )
 }
 
+/* Count Card Section */
 @Composable
 private fun CountCardSection(
     modifier: Modifier,
@@ -190,12 +239,14 @@ private fun CountCardSection(
     }
 }
 
+/* Mapel Card Section */
 @Composable
 private fun MapelCardsSection(
     modifier: Modifier,
     mapelList: List<Mapel>,
     emptyListText: String = "Anda tidak memiliki mata pelajaran apa pun.\n Klik tombol + untuk menambahkan mata pelajaran baru.",
-    onAddIconClicked: () -> Unit
+    onAddIconClicked: () -> Unit,
+    onMapelCardClick: (Int?) -> Unit
 ) {
     Column(modifier = modifier) {
         Row (
@@ -241,10 +292,9 @@ private fun MapelCardsSection(
                 MapelCard(
                     mapelName = mapel.name,
                     gradientColor = mapel.colors,
-                    onClick = {}
+                onClick = { onMapelCardClick(mapel.mapelId) }
                 )
             }
         }
-
     }
 }
