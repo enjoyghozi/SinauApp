@@ -1,5 +1,9 @@
 package com.example.sinauapp.domain.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 data class Task(
     val title: String,
     val description: String,
@@ -8,5 +12,6 @@ data class Task(
     val relatedToMapel: String,
     val isStatus: Boolean,
     val taskMapelId: Int,
-    val taskId: Int
+    @PrimaryKey(autoGenerate = true)
+    val taskId: Int? = null
 )
