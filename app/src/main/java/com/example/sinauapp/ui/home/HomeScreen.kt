@@ -291,7 +291,7 @@ private fun MapelCardsSection(
             items(mapelList) { mapel ->
                 MapelCard(
                     mapelName = mapel.name,
-                    gradientColor = mapel.colors,
+                    gradientColor = mapel.colors.map { Color(it) },
                 onClick = { onMapelCardClick(mapel.mapelId) }
                 )
             }

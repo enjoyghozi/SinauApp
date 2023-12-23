@@ -13,7 +13,7 @@ import com.example.sinauapp.ui.theme.gradient5
 data class Mapel(
     val name: String,
     val goalHours: Float,
-    val colors: List<Color>,
+    val colors: List<Int>,
     @PrimaryKey(autoGenerate = true)
     val mapelId: Int? = null
 ) {
