@@ -80,7 +80,7 @@ fun AddMapelDialog(
                             .padding(16.dp),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        Mapel.mapelCardColor.forEach { colors ->  
+                        Mapel.mapelCardColors.forEach { colors ->
                             Box(
                                 modifier = Modifier
                                     .size(24.dp)
