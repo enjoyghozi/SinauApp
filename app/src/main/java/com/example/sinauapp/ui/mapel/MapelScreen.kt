@@ -97,7 +97,7 @@ private fun MapelScreen(
 
     var mapelName by remember { mutableStateOf("") }
     var goalHours by remember { mutableStateOf("") }
-    var selectedColor by remember { mutableStateOf(Mapel.mapelCardColor.random()) }
+    var selectedColor by remember { mutableStateOf(Mapel.mapelCardColors.random()) }
 
     /* Add Mapel Dialog */
     AddMapelDialog(
