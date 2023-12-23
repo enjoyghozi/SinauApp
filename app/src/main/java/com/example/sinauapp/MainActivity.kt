@@ -6,7 +6,10 @@ import androidx.activity.compose.setContent
 import com.example.sinauapp.domain.model.Mapel
 import com.example.sinauapp.domain.model.Session
 import com.example.sinauapp.domain.model.Task
+import com.example.sinauapp.ui.home.HomeScreen
 import com.example.sinauapp.ui.mapel.MapelScreen
+import com.example.sinauapp.ui.session.SessionScreen
+import com.example.sinauapp.ui.task.TaskScreen
 import com.example.sinauapp.ui.theme.SinauAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,7 +18,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             SinauAppTheme {
 //                HomeScreen()
-                MapelScreen()
+//                MapelScreen()
+//                TaskScreen()
+                SessionScreen()
             }
         }
     }

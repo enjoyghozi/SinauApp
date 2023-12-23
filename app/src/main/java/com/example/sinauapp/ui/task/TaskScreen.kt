@@ -30,21 +30,26 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.sinauapp.mapel
 import com.example.sinauapp.ui.components.DeleteDialog
+import com.example.sinauapp.ui.components.MapelListBottomSheet
 import com.example.sinauapp.ui.components.TaskCheckbox
 import com.example.sinauapp.ui.components.TaskDatePicker
 import com.example.sinauapp.utility.Priority
 import com.example.sinauapp.utility.changeMillisToDateString
+import kotlinx.coroutines.launch
 import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,14 +62,19 @@ fun TaskScreen() {
         initialSelectedDateMillis = Instant.now().toEpochMilli()
     )
 
+    val scope = rememberCoroutineScope()
+
+    val sheetState = rememberModalBottomSheetState()
+    var isBottomSheetOpen by remember { mutableStateOf(false) }
+
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
     var taskTitleError by remember { mutableStateOf<String?>(null) }
     taskTitleError = when {
-        title.isBlank() -> "Silahkan isi judul task"
-        title.length < 3 -> "Judul task minimal 3 karakter"
-        title.length > 30 -> "Judul task terlalu panjang"
+        title.isBlank() -> "Silahkan isi judul tugas"
+        title.length < 3 -> "Judul tugas minimal 3 karakter"
+        title.length > 30 -> "Judul tugas terlalu panjang"
         else -> null
     }
 
@@ -84,6 +94,21 @@ fun TaskScreen() {
         onDismissRequest = { isDatePickerDialogOpen = false },
         onConfirmButtonClicked = {
             isDatePickerDialogOpen = false
+        }
+    )
+
+    MapelListBottomSheet(
+        sheetState = sheetState,
+        isOpen = isBottomSheetOpen,
+        mapel = mapel,
+        onDismissRequest = { isBottomSheetOpen = false },
+        onMapelClicked = {
+            isBottomSheetOpen = false
+            scope.launch {
+                sheetState.hide()
+            }.invokeOnCompletion {
+                if (!sheetState.isVisible) isBottomSheetOpen = false
+            }
         }
     )
 
@@ -173,7 +198,7 @@ fun TaskScreen() {
             }
             Spacer(modifier = Modifier.height(30.dp))
             Text(
-                text = "Terkait dengan Mapel",
+                text = "Mata Pelajaran",
                 style = MaterialTheme.typography.bodySmall
             )
             Row(
@@ -185,7 +210,7 @@ fun TaskScreen() {
                     text = "English",
                     style = MaterialTheme.typography.bodyLarge
                 )
-                IconButton(onClick = {  }) {
+                IconButton(onClick = { isBottomSheetOpen = true }) {
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
                         contentDescription = "Select Subject"
@@ -226,7 +251,7 @@ private fun TaskScreenTopBar(
         },
         title = {
             Text(
-                text = "Task",
+                text = "Tugas",
                 style = MaterialTheme.typography.headlineSmall
             )
         },

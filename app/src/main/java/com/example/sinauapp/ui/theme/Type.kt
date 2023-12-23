@@ -22,8 +22,8 @@ val robotoFontFamily = FontFamily(
     )
 )
 
-val pacificoFontFamily = FontFamily(
-    Font(googleFont = GoogleFont("Pacifico"),
+val boogalooFontFamily = FontFamily(
+    Font(googleFont = GoogleFont("Boogaloo"),
         fontProvider = provider
     )
 )
@@ -37,37 +37,37 @@ val montserratFontFamily = FontFamily(
 // Set of Material typography styles to start with
 val Typography = Typography(
     displayLarge = TextStyle(
-        fontFamily = pacificoFontFamily,
+        fontFamily = boogalooFontFamily,
         fontWeight = FontWeight.W600,
         fontSize = 57.sp,
         lineHeight = 64.sp
     ),
     displayMedium = TextStyle(
-        fontFamily = pacificoFontFamily,
+        fontFamily = boogalooFontFamily,
         fontWeight = FontWeight.W400,
         fontSize = 45.sp,
         lineHeight = 52.sp
     ),
     displaySmall = TextStyle(
-        fontFamily = pacificoFontFamily,
+        fontFamily = boogalooFontFamily,
         fontWeight = FontWeight.W400,
         fontSize = 36.sp,
         lineHeight = 44.sp
     ),
     headlineLarge = TextStyle(
-        fontFamily = pacificoFontFamily,
+        fontFamily = boogalooFontFamily,
         fontWeight = FontWeight.W600,
         fontSize = 32.sp,
         lineHeight = 40.sp
     ),
     headlineMedium = TextStyle(
-        fontFamily = pacificoFontFamily,
+        fontFamily = boogalooFontFamily,
         fontWeight = FontWeight.W400,
         fontSize = 28.sp,
         lineHeight = 36.sp
     ),
     headlineSmall = TextStyle(
-        fontFamily = pacificoFontFamily,
+        fontFamily = boogalooFontFamily,
         fontWeight = FontWeight.W400,
         fontSize = 24.sp,
         lineHeight = 32.sp
