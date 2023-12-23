@@ -2,7 +2,6 @@ package com.example.sinauapp.domain.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.time.Duration
 
 @Entity
 data class Session(
