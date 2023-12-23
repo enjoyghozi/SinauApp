@@ -26,7 +26,7 @@ interface SessionDao {
     fun getTotalSessionsDuration(): Flow<Long>
 
     @Query("SELECT SUM(duration) FROM Session WHERE sessionMapelId = :mapelId")
-    fun getTotalSessionsDurationByMapelId(mapelId: Int): Flow<Long>
+    fun getTotalSessionsDurationByMapel(mapelId: Int): Flow<Long>
 
     @Query("DELETE FROM Session WHERE sessionMapelId = :mapelId")
     fun deleteSessionsByMapelId(mapelId: Int)

@@ -4,6 +4,7 @@ import com.example.sinauapp.data.local.TaskDao
 import com.example.sinauapp.domain.model.Task
 import com.example.sinauapp.domain.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class TaskRepoImpl @Inject constructor(
@@ -15,22 +16,32 @@ class TaskRepoImpl @Inject constructor(
     }
 
     override suspend fun deleteTask(taskId: Int) {
-        TODO("Not yet implemented")
+        taskDao.deleteTask(taskId)
     }
 
     override suspend fun getTaskById(taskId: Int): Task? {
-        TODO("Not yet implemented")
+        return taskDao.getTaskById(taskId)
     }
 
-    override fun getUpcomingTasksForMapel(mapelInt: Int): Flow<List<Task>> {
-        TODO("Not yet implemented")
+    override fun getUpcomingTasksForMapel(mapelId: Int): Flow<List<Task>> {
+        return taskDao.getTasksForMapel(mapelId)
+            .map { tasks -> tasks.filter { it.isStatus.not() } }
+            .map { tasks -> sortTasks(tasks) }
     }
 
-    override fun getCompletedTasksForMapel(mapelInt: Int): Flow<List<Task>> {
-        TODO("Not yet implemented")
+    override fun getCompletedTasksForMapel(mapelId: Int): Flow<List<Task>> {
+        return taskDao.getTasksForMapel(mapelId)
+            .map { tasks -> tasks.filter { it.isStatus } }
+            .map { tasks -> sortTasks(tasks) }
     }
 
     override fun getAllUpcomingTasks(): Flow<List<Task>> {
-        TODO("Not yet implemented")
+        return taskDao.getAllTasks()
+            .map { tasks -> tasks.filter { it.isStatus.not() } }
+            .map { tasks -> sortTasks(tasks) }
+    }
+
+    private fun sortTasks(tasks: List<Task>): List<Task> {
+        return tasks.sortedWith(compareBy<Task> { it.dueDate }.thenByDescending { it.priority })
     }
 }

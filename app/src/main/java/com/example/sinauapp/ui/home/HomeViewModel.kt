@@ -4,12 +4,16 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sinauapp.domain.model.Mapel
+import com.example.sinauapp.domain.model.Session
+import com.example.sinauapp.domain.model.Task
 import com.example.sinauapp.domain.repository.MapelRepository
 import com.example.sinauapp.domain.repository.SessionRepository
+import com.example.sinauapp.domain.repository.TaskRepository
 import com.example.sinauapp.utility.toHours
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -19,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val mapelRepository: MapelRepository,
-    private val sessionRepository: SessionRepository
+    private val sessionRepository: SessionRepository,
+    private val taskRepository: TaskRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(HomeState())
     val state = combine(
@@ -40,6 +45,20 @@ class HomeViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = HomeState()
     )
+
+    val tasks: StateFlow<List<Task>> = taskRepository.getAllUpcomingTasks()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val recentSessions: StateFlow<List<Session>> = sessionRepository.getRecentFiveSessions()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     /* Event Implementation */
     fun onEvent(event: HomeEvent) {

@@ -70,9 +70,13 @@ fun HomeScreenRoute(
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val tasks by viewModel.tasks.collectAsStateWithLifecycle()
+    val recentSessions by viewModel.recentSessions.collectAsStateWithLifecycle()
 
     HomeScreen(
         state = state,
+        task = tasks,
+        recentSessions = recentSessions,
         onEvent = viewModel::onEvent,
         onMapelCardClick = { mapelId ->
             mapelId?.let {
@@ -92,6 +96,8 @@ fun HomeScreenRoute(
 @Composable
 private fun HomeScreen(
     state: HomeState,
+    task: List<Task>,
+    recentSessions: List<Session>,
     onEvent: (HomeEvent) -> Unit,
     onMapelCardClick: (Int?) -> Unit = {},
     onTaskCardClick: (Int?) -> Unit = {},
@@ -194,7 +200,7 @@ private fun HomeScreen(
                 sectionTitle = "Waktu Belajar",
                 emptyListText = "Anda tidak memiliki sesi belajar.\n" +
                         "Klik tombol + di layar mata pelajaran untuk menambahkan waktu belajar baru.",
-                sessions = sessions,
+                sessions = recentSessions,
                 onDeleteIconClick = {
                     onEvent(HomeEvent.OnDeleteSessionButtonClick(it))
                     isDeleteSessionDialogOpen = true

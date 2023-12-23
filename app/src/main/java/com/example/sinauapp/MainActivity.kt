@@ -10,7 +10,9 @@ import com.example.sinauapp.domain.model.Task
 import com.example.sinauapp.ui.NavGraphs
 import com.example.sinauapp.ui.theme.SinauAppTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +24,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-val mapel = listOf(
+val mapel = listOf  (
     Mapel(
         name = "English",
         goalHours = 10f,

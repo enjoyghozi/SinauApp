@@ -11,9 +11,9 @@ interface MapelRepository {
 
     fun getTotalGoalHours(): Flow<Float>
 
-    suspend fun deleteMapel(mapelInt: Int)
+    suspend fun deleteMapel(mapelId: Int)
 
-    suspend fun getMapelById(mapelInt: Int): Mapel?
+    suspend fun getMapelById(mapelId: Int): Mapel?
 
     fun getAllMapel(): Flow<List<Mapel>>
 }
