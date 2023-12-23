@@ -73,6 +73,7 @@ fun HomeScreenRoute(
 
     HomeScreen(
         state = state,
+        onEvent = viewModel::onEvent,
         onMapelCardClick = { mapelId ->
             mapelId?.let {
                 val navArg = MapelScreenNavArgs(mapelId = mapelId)
@@ -91,6 +92,7 @@ fun HomeScreenRoute(
 @Composable
 private fun HomeScreen(
     state: HomeState,
+    onEvent: (HomeEvent) -> Unit,
     onMapelCardClick: (Int?) -> Unit = {},
     onTaskCardClick: (Int?) -> Unit = {},
     onStartSessionButtonClick: () -> Unit = {},
@@ -106,11 +108,12 @@ private fun HomeScreen(
         selectedColors = state.mapelCardColors,
         mapelName = state.mapelName,
         goalHours = state.goalStudyHours,
-        onMapelNameChange = {  },
-        onGoalHoursChange = {  },
-        onColorChange = {  },
+        onMapelNameChange = { onEvent(HomeEvent.OnMapelNameChange(it)) },
+        onGoalHoursChange = { onEvent(HomeEvent.OnGoalStudyHoursChange(it)) },
+        onColorChange = { onEvent(HomeEvent.OnMapelCardColorChange(it)) },
         onDismissRequest = { isAddMapelDialogOpen = false },
         onConfirmButtonClick = {
+            onEvent(HomeEvent.SaveMapel)
             isAddMapelDialogOpen = false
         }
     )
@@ -121,7 +124,10 @@ private fun HomeScreen(
         title = "Hapus Sesi",
         bodyText = "Apakah anda yakin ingin menghapus sesi ini? jam belajar Anda akan dikurangi dengan waktu sesi ini. Tindakan ini tidak bisa dibatalkan.",
         onDismissRequest = { isDeleteSessionDialogOpen = false },
-        onConfirmButtonClick = { isDeleteSessionDialogOpen = false }
+        onConfirmButtonClick = {
+            onEvent(HomeEvent.DeleteSession)
+            isDeleteSessionDialogOpen = false
+        }
     )
 
     /* Load Content */
@@ -189,7 +195,10 @@ private fun HomeScreen(
                 emptyListText = "Anda tidak memiliki sesi belajar.\n" +
                         "Klik tombol + di layar mata pelajaran untuk menambahkan waktu belajar baru.",
                 sessions = sessions,
-                onDeleteIconClick = { isDeleteSessionDialogOpen = true }
+                onDeleteIconClick = {
+                    onEvent(HomeEvent.OnDeleteSessionButtonClick(it))
+                    isDeleteSessionDialogOpen = true
+                }
             )
         }
     }
