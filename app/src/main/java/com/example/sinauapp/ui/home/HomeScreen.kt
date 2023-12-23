@@ -24,8 +24,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,9 +46,6 @@ import com.example.sinauapp.R
 import com.example.sinauapp.domain.model.Mapel
 import com.example.sinauapp.domain.model.Session
 import com.example.sinauapp.domain.model.Task
-import com.example.sinauapp.mapel
-import com.example.sinauapp.sessions
-import com.example.sinauapp.tasks
 import com.example.sinauapp.ui.components.AddMapelDialog
 import com.example.sinauapp.ui.components.CountCard
 import com.example.sinauapp.ui.components.DeleteDialog
@@ -57,9 +57,12 @@ import com.example.sinauapp.ui.destinations.SessionScreenRouteDestination
 import com.example.sinauapp.ui.destinations.TaskScreenRouteDestination
 import com.example.sinauapp.ui.mapel.MapelScreenNavArgs
 import com.example.sinauapp.ui.task.TaskScreenNavArgs
+import com.example.sinauapp.utility.SnackbarEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 
 /* Route */
 @RootNavGraph(start = true)
@@ -75,9 +78,10 @@ fun HomeScreenRoute(
 
     HomeScreen(
         state = state,
-        task = tasks,
+        tasks = tasks,
         recentSessions = recentSessions,
         onEvent = viewModel::onEvent,
+        snackbarEvent = viewModel.snackbarEventFlow,
         onMapelCardClick = { mapelId ->
             mapelId?.let {
                 val navArg = MapelScreenNavArgs(mapelId = mapelId)
@@ -96,9 +100,10 @@ fun HomeScreenRoute(
 @Composable
 private fun HomeScreen(
     state: HomeState,
-    task: List<Task>,
+    tasks: List<Task>,
     recentSessions: List<Session>,
     onEvent: (HomeEvent) -> Unit,
+    snackbarEvent: SharedFlow<SnackbarEvent>,
     onMapelCardClick: (Int?) -> Unit = {},
     onTaskCardClick: (Int?) -> Unit = {},
     onStartSessionButtonClick: () -> Unit = {},
@@ -107,6 +112,22 @@ private fun HomeScreen(
     /* Variables for Dialog */
     var isAddMapelDialogOpen by rememberSaveable { mutableStateOf(false) }
     var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
+
+    /* Snackbar */
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(key1 = true) {
+        snackbarEvent.collectLatest { event ->
+            when(event) {
+                is SnackbarEvent.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.message,
+                        duration = event.duration
+                    )
+                }
+            }
+        }
+    }
 
     /* Add Mapel Dialog */
     AddMapelDialog(
@@ -138,6 +159,7 @@ private fun HomeScreen(
 
     /* Load Content */
     Scaffold (
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = { HomeScreenTopBar() },
     ) { paddingValues ->
         LazyColumn(
@@ -181,13 +203,13 @@ private fun HomeScreen(
                 }
             }
 
-            /* TaskList (List Tugas Mendatang) */
+            /* TaskList (Catatan Tugas) */
             taskList(
-                sectionTitle = "Tugas Mendatang",
-                emptyListText = "Anda tidak memiliki tugas mendatang.\n" +
+                sectionTitle = "Catatan Tugas",
+                emptyListText = "Anda tidak memiliki catatan tugas.\n" +
                         "Klik tombol + di layar subjek untuk menambahkan tugas baru.",
                 tasks = tasks,
-                onCheckBoxClick = {  },
+                onCheckBoxClick = { onEvent(HomeEvent.OnTaskIsCompleteChange(it)) },
                 onTaskCardClick = onTaskCardClick
             )
 

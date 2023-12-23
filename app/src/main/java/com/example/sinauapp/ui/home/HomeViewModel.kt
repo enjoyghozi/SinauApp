@@ -1,5 +1,6 @@
 package com.example.sinauapp.ui.home
 
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,11 +10,14 @@ import com.example.sinauapp.domain.model.Task
 import com.example.sinauapp.domain.repository.MapelRepository
 import com.example.sinauapp.domain.repository.SessionRepository
 import com.example.sinauapp.domain.repository.TaskRepository
+import com.example.sinauapp.utility.SnackbarEvent
 import com.example.sinauapp.utility.toHours
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -60,6 +64,12 @@ class HomeViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
+    /* Snackbar */
+    private val _snackbarEventFlow = MutableSharedFlow<SnackbarEvent>()
+    val snackbarEventFlow = _snackbarEventFlow.asSharedFlow()
+
+
+
     /* Event Implementation */
     fun onEvent(event: HomeEvent) {
         when(event) {
@@ -105,20 +115,43 @@ class HomeViewModel @Inject constructor(
 
             HomeEvent.DeleteSession -> TODO()
 
-            is HomeEvent.OnTaskIsCompleteChange -> TODO()
+            is HomeEvent.OnTaskIsCompleteChange -> {
+                TODO()
+            }
 
         }
     }
 
     private fun saveMapel() {
         viewModelScope.launch {
-            mapelRepository.upsertMapel(
-                mapel = Mapel(
-                    name = _state.value.mapelName,
-                    goalHours = _state.value.goalStudyHours.toFloatOrNull() ?: 1f,
-                    colors = _state.value.mapelCardColors.map { it.toArgb() },
+            try {
+                mapelRepository.upsertMapel(
+                    mapel = Mapel(
+                        name = _state.value.mapelName,
+                        goalHours = _state.value.goalStudyHours.toFloatOrNull() ?: 1f,
+                        colors = _state.value.mapelCardColors.map { it.toArgb() },
+                    )
                 )
-            )
+                _state.update {
+                    it.copy(
+                        mapelName = "",
+                        goalStudyHours = "",
+                        mapelCardColors = Mapel.mapelCardColors.random()
+                    )
+                }
+                _snackbarEventFlow.emit(
+                    SnackbarEvent.ShowSnackbar(
+                        message = "Mapel berhasil disimpan",
+                        SnackbarDuration.Long
+                    )
+                )
+            } catch (e: Exception) {
+                _snackbarEventFlow.emit(
+                    SnackbarEvent.ShowSnackbar(
+                        message = "Tidak bisa menyimpan Mapel. ${e.message}",
+                    )
+                )
+            }
         }
     }
 
