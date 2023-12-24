@@ -13,14 +13,14 @@ import java.time.format.DateTimeFormatter
 enum class Priority (
     val title: String,
     val color: Color,
-    val Value: Int
+    val value: Int
 ) {
     Minor("Minor", color = green, 0),
     Major("Major", color = orange, 1),
     Important("Important", color = red, 2);
 
     companion object {
-        fun fromInt(value: Int) = values().firstOrNull { it.Value == value } ?: Major
+        fun fromInt(value: Int) = values().firstOrNull { it.value == value } ?: Major
     }
 }
 

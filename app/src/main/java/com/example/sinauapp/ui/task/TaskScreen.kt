@@ -27,11 +27,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,15 +46,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.sinauapp.mapel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sinauapp.ui.components.DeleteDialog
 import com.example.sinauapp.ui.components.MapelListBottomSheet
 import com.example.sinauapp.ui.components.TaskCheckbox
 import com.example.sinauapp.ui.components.TaskDatePicker
 import com.example.sinauapp.utility.Priority
+import com.example.sinauapp.utility.SnackbarEvent
 import com.example.sinauapp.utility.changeMillisToDateString
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.Instant
 
@@ -67,9 +73,11 @@ fun TaskScreenRoute(
     navigator: DestinationsNavigator
 ) {
     val viewModel: TaskViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     TaskScreen(
-        state = TaskState(),
-        onEvent = {},
+        state = state,
+        onEvent = viewModel::onEvent,
+        snackbarEvent = viewModel.snackbarEventFlow,
         onBackButtonClick = {
             navigator.navigateUp()
         }
@@ -81,6 +89,7 @@ fun TaskScreenRoute(
 private fun TaskScreen(
     state: TaskState,
     onEvent: (TaskEvent) -> Unit,
+    snackbarEvent: SharedFlow<SnackbarEvent>,
     onBackButtonClick: () -> Unit
 ) {
 
@@ -97,8 +106,6 @@ private fun TaskScreen(
     val sheetState = rememberModalBottomSheetState()
     var isBottomSheetOpen by remember { mutableStateOf(false) }
 
-
-
     /* Form Validation */
     var taskTitleError by remember { mutableStateOf<String?>(null) }
     taskTitleError = when {
@@ -106,6 +113,25 @@ private fun TaskScreen(
         state.title.length < 3 -> "Judul tugas minimal 3 karakter"
         state.title.length > 30 -> "Judul tugas terlalu panjang"
         else -> null
+    }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(key1 = true) {
+        snackbarEvent.collectLatest { event ->
+            when (event) {
+                is SnackbarEvent.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.message,
+                        duration = event.duration
+                    )
+                }
+
+                SnackbarEvent.NavigateUp -> {
+                    onBackButtonClick()
+                }
+            }
+        }
     }
 
     /* Delete Dialog */
@@ -150,6 +176,7 @@ private fun TaskScreen(
 
     /* Load Content */
     Scaffold (
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar =  {
             TaskScreenTopBar(
                 isTaskExist = state.currentTaskId != null,
@@ -255,7 +282,7 @@ private fun TaskScreen(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 val firstMapel = state.mapel.firstOrNull()?.name ?: ""
                 Text(
@@ -265,7 +292,7 @@ private fun TaskScreen(
                 IconButton(onClick = { isBottomSheetOpen = true }) {
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "Select Subject"
+                        contentDescription = "Pilih Mata Pelajaran",
                     )
                 }
             }
