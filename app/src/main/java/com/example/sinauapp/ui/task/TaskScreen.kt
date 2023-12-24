@@ -66,6 +66,8 @@ fun TaskScreenRoute(
     navigator: DestinationsNavigator
 ) {
     TaskScreen(
+        state = TaskState(),
+        onEvent = {},
         onBackButtonClick = {
             navigator.navigateUp()
         }
@@ -75,6 +77,8 @@ fun TaskScreenRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TaskScreen(
+    state: TaskState,
+    onEvent: (TaskEvent) -> Unit,
     onBackButtonClick: () -> Unit
 ) {
 
