@@ -125,6 +125,10 @@ private fun HomeScreen(
                         duration = event.duration
                     )
                 }
+
+                SnackbarEvent.NavigateUp -> {
+
+                }
             }
         }
     }

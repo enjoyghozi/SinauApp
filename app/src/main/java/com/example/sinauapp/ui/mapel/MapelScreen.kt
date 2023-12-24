@@ -124,8 +124,17 @@ private fun MapelScreen(
                         duration = event.duration
                     )
                 }
+
+                SnackbarEvent.NavigateUp -> {
+                    onBackButtonClick()
+                }
             }
         }
+    }
+
+    /* Launch Effect for Progress */
+    LaunchedEffect(key1 = state.studiedHours, key2 = state.goalStudyHours) {
+        onEvent(MapelEvent.UpdateProgress)
     }
 
     /* Add Mapel Dialog */

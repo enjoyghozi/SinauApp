@@ -139,7 +139,7 @@ class HomeViewModel @Inject constructor(
             } catch (e: Exception) {
                 _snackbarEventFlow.emit(
                     SnackbarEvent.ShowSnackbar(
-                        "Couldn't update task. ${e.message}",
+                        "Couldn't update task. \n Message: ${e.message}",
                         SnackbarDuration.Long
                     )
                 )
