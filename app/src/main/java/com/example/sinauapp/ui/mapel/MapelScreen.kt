@@ -25,10 +25,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,8 +56,11 @@ import com.example.sinauapp.ui.components.studySessionList
 import com.example.sinauapp.ui.components.taskList
 import com.example.sinauapp.ui.destinations.TaskScreenRouteDestination
 import com.example.sinauapp.ui.task.TaskScreenNavArgs
+import com.example.sinauapp.utility.SnackbarEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 
 data class MapelScreenNavArgs(
     val mapelId: Int
@@ -72,6 +78,7 @@ fun MapelScreenRoute(
     MapelScreen(
         state = state,
         onEvent = viewModel::onEvent,
+        snackbarEvent = viewModel.snackbarEventFlow,
         onBackButtonClick = { navigator.navigateUp()},
         onAddTaskButtonClick = {
             val navArg = TaskScreenNavArgs(taskId = null, mapelId = -1)
@@ -89,6 +96,7 @@ fun MapelScreenRoute(
 private fun MapelScreen(
     state: MapelState,
     onEvent: (MapelEvent) -> Unit,
+    snackbarEvent: SharedFlow<SnackbarEvent>,
     onBackButtonClick: () -> Unit,
     onAddTaskButtonClick: () -> Unit,
     onTaskCardClick: (Int?) -> Unit
@@ -104,7 +112,21 @@ private fun MapelScreen(
     var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
     var isDeleteMapelDialogOpen by rememberSaveable { mutableStateOf(false) }
 
+    /* Snackbar */
+    val snackbarHostState = remember { SnackbarHostState() }
 
+    LaunchedEffect(key1 = true) {
+        snackbarEvent.collectLatest { event ->
+            when(event) {
+                is SnackbarEvent.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.message,
+                        duration = event.duration
+                    )
+                }
+            }
+        }
+    }
 
     /* Add Mapel Dialog */
     AddMapelDialog(
@@ -148,6 +170,7 @@ private fun MapelScreen(
 
     /* Load Content */
     Scaffold (
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
         /* Top Bar */
