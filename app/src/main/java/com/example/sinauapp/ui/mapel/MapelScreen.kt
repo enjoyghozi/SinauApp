@@ -65,6 +65,8 @@ fun MapelScreenRoute(
     navigator: DestinationsNavigator,
 ) {
     MapelScreen(
+        state = MapelState(),
+        onEvent = {},
         onBackButtonClick = { navigator.navigateUp()},
         onAddTaskButtonClick = {
             val navArg = TaskScreenNavArgs(taskId = null, mapelId = -1)
@@ -80,6 +82,8 @@ fun MapelScreenRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MapelScreen(
+    state: MapelState,
+    onEvent: (MapelEvent) -> Unit,
     onBackButtonClick: () -> Unit,
     onAddTaskButtonClick: () -> Unit,
     onTaskCardClick: (Int?) -> Unit
@@ -95,22 +99,21 @@ private fun MapelScreen(
     var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
     var isDeleteMapelDialogOpen by rememberSaveable { mutableStateOf(false) }
 
-    var mapelName by remember { mutableStateOf("") }
-    var goalHours by remember { mutableStateOf("") }
-    var selectedColor by remember { mutableStateOf(Mapel.mapelCardColors.random()) }
+
 
     /* Add Mapel Dialog */
     AddMapelDialog(
         isOpen = isEditMapelDialogOpen,
-        selectedColors = selectedColor,
-        mapelName = mapelName,
-        goalHours = goalHours,
-        onMapelNameChange = { mapelName = it },
-        onGoalHoursChange = { goalHours = it },
-        onColorChange = { selectedColor = it },
+        selectedColors = state.mapelCardColors,
+        mapelName = state.mapelName,
+        goalHours = state.goalStudyHours,
+        onMapelNameChange = { onEvent(MapelEvent.OnMapelNameChange(it)) },
+        onGoalHoursChange = { onEvent(MapelEvent.OnGoalStudyHoursChange(it)) },
+        onColorChange = { onEvent(MapelEvent.OnMapelCardColorChange(it)) },
         onDismissRequest = { isEditMapelDialogOpen = false },
         onConfirmButtonClick = {
             isEditMapelDialogOpen = false
+            onEvent(MapelEvent.UpdateMapel)
         }
     )
 
@@ -120,7 +123,10 @@ private fun MapelScreen(
         title = "Hapus Mapel",
         bodyText = "Apakah anda yakin ingin menghapus sesi ini? tugas dan jam belajar Anda akan dihapus secara Permanen. Tindakan ini tidak bisa dibatalkan.",
         onDismissRequest = { isDeleteMapelDialogOpen = false },
-        onConfirmButtonClick = { isDeleteMapelDialogOpen = false }
+        onConfirmButtonClick = {
+            isDeleteMapelDialogOpen = false
+            onEvent(MapelEvent.DeleteMapel)
+        }
     )
 
     /*  Delete Session Dialog */
@@ -129,7 +135,10 @@ private fun MapelScreen(
         title = "Hapus Sesi",
         bodyText = "Apakah anda yakin ingin menghapus sesi ini? jam belajar Anda akan dikurangi dengan waktu sesi ini. Tindakan ini tidak bisa dibatalkan.",
         onDismissRequest = { isDeleteSessionDialogOpen = false },
-        onConfirmButtonClick = { isDeleteSessionDialogOpen = false }
+        onConfirmButtonClick = {
+            isDeleteSessionDialogOpen = false
+            onEvent(MapelEvent.DeleteSession)
+        }
     )
 
     /* Load Content */
@@ -139,7 +148,7 @@ private fun MapelScreen(
         /* Top Bar */
         topBar = {
             MapelScreenTopBar(
-                title = "Bahasa Indonesia",
+                title = state.mapelName,
                 onBackButtonClick = onBackButtonClick,
                 onDeleteButtonClick = { isDeleteMapelDialogOpen = true },
                 onEditButtonClick = { isEditMapelDialogOpen = true },
@@ -171,9 +180,9 @@ private fun MapelScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp),
-                    studiesHours = "10",
-                    goalHours = "15",
-                    progress = 0.75f
+                    studiesHours = state.goalStudyHours,
+                    goalHours = state.studiedHours.toString(),
+                    progress = state.progress
                 )
             }
 
@@ -182,8 +191,8 @@ private fun MapelScreen(
                 sectionTitle = "Tugas Mendatang",
                 emptyListText = "Anda tidak memiliki tugas mendatang.\n" +
                         "Klik tombol + di layar subjek untuk menambahkan tugas baru.",
-                tasks = tasks,
-                onCheckBoxClick = {  },
+                tasks = state.upcomingTasks,
+                onCheckBoxClick = { onEvent(MapelEvent.OnTaskIsCompleteChange(it)) },
                 onTaskCardClick = onTaskCardClick
             )
 
@@ -196,8 +205,8 @@ private fun MapelScreen(
                 sectionTitle = "Riwayat Tugas",
                 emptyListText = "Anda tidak memiliki tugas mendatang.\n" +
                         "Klik tombol + di layar subjek untuk menambahkan tugas baru.",
-                tasks = tasks,
-                onCheckBoxClick = {  },
+                tasks = state.completedTasks,
+                onCheckBoxClick = { onEvent(MapelEvent.OnTaskIsCompleteChange(it)) },
                 onTaskCardClick = onTaskCardClick
             )
 
@@ -210,8 +219,11 @@ private fun MapelScreen(
                 sectionTitle = "Waktu Belajar",
                 emptyListText = "Anda tidak memiliki sesi belajar.\n" +
                         "Klik tombol + di layar mata pelajaran untuk menambahkan waktu belajar baru.",
-                sessions = sessions,
-                onDeleteIconClick = { isDeleteSessionDialogOpen = true }
+                sessions = state.recentSessions,
+                onDeleteIconClick = {
+                    isDeleteSessionDialogOpen = true
+                    onEvent(MapelEvent.OnDeleteSessionButtonClick(it))
+                }
             )
         }
     }
