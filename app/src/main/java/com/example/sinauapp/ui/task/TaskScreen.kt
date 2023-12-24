@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.sinauapp.mapel
 import com.example.sinauapp.ui.components.DeleteDialog
 import com.example.sinauapp.ui.components.MapelListBottomSheet
@@ -65,6 +66,7 @@ data class TaskScreenNavArgs(
 fun TaskScreenRoute(
     navigator: DestinationsNavigator
 ) {
+    val viewModel: TaskViewModel = hiltViewModel()
     TaskScreen(
         state = TaskState(),
         onEvent = {},
@@ -95,15 +97,14 @@ private fun TaskScreen(
     val sheetState = rememberModalBottomSheetState()
     var isBottomSheetOpen by remember { mutableStateOf(false) }
 
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
+
 
     /* Form Validation */
     var taskTitleError by remember { mutableStateOf<String?>(null) }
     taskTitleError = when {
-        title.isBlank() -> "Silahkan isi judul tugas"
-        title.length < 3 -> "Judul tugas minimal 3 karakter"
-        title.length > 30 -> "Judul tugas terlalu panjang"
+        state.title.isBlank() -> "Silahkan isi judul tugas"
+        state.title.length < 3 -> "Judul tugas minimal 3 karakter"
+        state.title.length > 30 -> "Judul tugas terlalu panjang"
         else -> null
     }
 
@@ -114,6 +115,7 @@ private fun TaskScreen(
         bodyText = "Apakah anda yakin ingin menghapus task ini?" + "\n" + "Task yang di hapus tidak dapat dikembalikan",
         onDismissRequest = { isDeleteDialogOpen = false },
         onConfirmButtonClick = {
+            onEvent(TaskEvent.DeleteTask)
             isDeleteDialogOpen = false
         }
     )
@@ -124,6 +126,7 @@ private fun TaskScreen(
         isOpen = isDatePickerDialogOpen,
         onDismissRequest = { isDatePickerDialogOpen = false },
         onConfirmButtonClicked = {
+            onEvent(TaskEvent.OnDateChange(millis = datePickerState.selectedDateMillis))
             isDatePickerDialogOpen = false
         }
     )
@@ -132,15 +135,16 @@ private fun TaskScreen(
     MapelListBottomSheet(
         sheetState = sheetState,
         isOpen = isBottomSheetOpen,
-        mapel = mapel,
+        mapel = state.mapel,
         onDismissRequest = { isBottomSheetOpen = false },
-        onMapelClicked = {
+        onMapelClicked = { mapel ->
             isBottomSheetOpen = false
             scope.launch {
                 sheetState.hide()
             }.invokeOnCompletion {
                 if (!sheetState.isVisible) isBottomSheetOpen = false
             }
+            onEvent(TaskEvent.OnRelatedMapelSelect(mapel))
         }
     )
 
@@ -148,12 +152,12 @@ private fun TaskScreen(
     Scaffold (
         topBar =  {
             TaskScreenTopBar(
-                isTaskExist = true,
+                isTaskExist = state.currentTaskId != null,
                 isComplete = false,
-                checkBoxBorderColor = Color.Red,
+                checkBoxBorderColor = state.priority.color,
                 onBackButtonClick = onBackButtonClick,
                 onDeleteButtonClick = { isDeleteDialogOpen = true },
-                onCheckBoxClick = {}
+                onCheckBoxClick = { onEvent(TaskEvent.OnIsCompleteChange) },
             )
         }
     ) { paddingValue ->
@@ -168,13 +172,13 @@ private fun TaskScreen(
             /* Text Field Judul */
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = title,
-                onValueChange = { title = it },
+                value = state.title,
+                onValueChange = { onEvent(TaskEvent.OnTitleChange(it)) },
                 label = {
                     Text(text = "Judul")
                 },
                 singleLine = true,
-                isError = taskTitleError != null && title.isNotBlank(),
+                isError = taskTitleError != null && state.title.isNotBlank(),
                 supportingText = {
                     Text(text = taskTitleError.orEmpty())
                 }
@@ -185,8 +189,8 @@ private fun TaskScreen(
             /* Text Field Keterangan */
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = description,
-                onValueChange = { description = it },
+                value = state.description,
+                onValueChange = { onEvent(TaskEvent.OnDescriptionChange(it)) },
                 label = {
                     Text(text = "Keterangan")
                 }
@@ -230,13 +234,13 @@ private fun TaskScreen(
                         modifier = Modifier.weight(1f),
                         label = priority.title,
                         backgroundColor = priority.color,
-                        borderColor = if (priority == Priority.Major) {
+                        borderColor = if (priority == state.priority) {
                             Color.White
                         } else Color.Transparent,
-                        labelColor = if (priority == Priority.Important) {
+                        labelColor = if (priority == state.priority) {
                             Color.White
                         } else Color.White.copy(alpha = 0.7f),
-                        onClick = {}
+                        onClick = { onEvent(TaskEvent.OnPriorityChange(priority)) }
                     )
                 }
             }
@@ -253,8 +257,9 @@ private fun TaskScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val firstMapel = state.mapel.firstOrNull()?.name ?: ""
                 Text(
-                    text = "English",
+                    text = state.relatedToMapel ?: firstMapel,
                     style = MaterialTheme.typography.bodyLarge
                 )
                 IconButton(onClick = { isBottomSheetOpen = true }) {
@@ -266,7 +271,7 @@ private fun TaskScreen(
             }
             Button(
                 enabled = taskTitleError == null,
-                onClick = { /*TODO*/ },
+                onClick = { onEvent(TaskEvent.SaveTask) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 20.dp)
