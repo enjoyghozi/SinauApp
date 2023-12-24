@@ -49,7 +49,8 @@ fun MapelCard(
             Text(
                 text = mapelName,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.White
+                color = Color.White,
+                maxLines = 1
             )
         }
     }

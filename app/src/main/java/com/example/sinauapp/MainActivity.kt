@@ -64,7 +64,7 @@ val tasks = listOf(
         dueDate = 0L,
         priority = 0,
         relatedToMapel = "",
-        isStatus = false,
+        isComplete = false,
         taskMapelId = 0,
         taskId = 1
     ),
@@ -74,7 +74,7 @@ val tasks = listOf(
         dueDate = 0L,
         priority = 1,
         relatedToMapel = "",
-        isStatus = true,
+        isComplete = true,
         taskMapelId = 0,
         taskId = 1
     ),
@@ -84,7 +84,7 @@ val tasks = listOf(
         dueDate = 0L,
         priority = 2,
         relatedToMapel = "",
-        isStatus = false,
+        isComplete = false,
         taskMapelId = 0,
         taskId = 1
     ),
@@ -94,7 +94,7 @@ val tasks = listOf(
         dueDate = 0L,
         priority = 1,
         relatedToMapel = "",
-        isStatus = false,
+        isComplete = false,
         taskMapelId = 0,
         taskId = 1
     ),
@@ -104,7 +104,7 @@ val tasks = listOf(
         dueDate = 0L,
         priority = 0,
         relatedToMapel = "",
-        isStatus = true,
+        isComplete = true,
         taskMapelId = 0,
         taskId = 1
     )

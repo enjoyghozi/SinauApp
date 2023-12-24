@@ -131,7 +131,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 taskRepository.upsertTask(
-                    task = task.copy(isStatus = !task.isStatus)
+                    task = task.copy(isComplete = !task.isComplete)
                 )
                 _snackbarEventFlow.emit(
                     SnackbarEvent.ShowSnackbar(message = "Saved in completed tasks.")

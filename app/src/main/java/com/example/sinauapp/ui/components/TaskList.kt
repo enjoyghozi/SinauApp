@@ -93,7 +93,7 @@ private fun TaskCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TaskCheckbox(
-                isStatus = task.isStatus,
+                isComplete = task.isComplete,
                 borderColor = Priority.fromInt(task.priority).color,
                 onCheckBoxClick = onCheckBoxClick
             )
@@ -104,7 +104,7 @@ private fun TaskCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleSmall,
-                    textDecoration = if (task.isStatus) TextDecoration.LineThrough else TextDecoration.None
+                    textDecoration = if (task.isComplete) TextDecoration.LineThrough else TextDecoration.None
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(

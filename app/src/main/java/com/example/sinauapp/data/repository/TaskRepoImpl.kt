@@ -25,19 +25,19 @@ class TaskRepoImpl @Inject constructor(
 
     override fun getUpcomingTasksForMapel(mapelId: Int): Flow<List<Task>> {
         return taskDao.getTasksForMapel(mapelId)
-            .map { tasks -> tasks.filter { it.isStatus.not() } }
+            .map { tasks -> tasks.filter { it.isComplete.not() } }
             .map { tasks -> sortTasks(tasks) }
     }
 
     override fun getCompletedTasksForMapel(mapelId: Int): Flow<List<Task>> {
         return taskDao.getTasksForMapel(mapelId)
-            .map { tasks -> tasks.filter { it.isStatus } }
+            .map { tasks -> tasks.filter { it.isComplete } }
             .map { tasks -> sortTasks(tasks) }
     }
 
     override fun getAllUpcomingTasks(): Flow<List<Task>> {
         return taskDao.getAllTasks()
-            .map { tasks -> tasks.filter { it.isStatus.not() } }
+            .map { tasks -> tasks.filter { it.isComplete.not() } }
             .map { tasks -> sortTasks(tasks) }
     }
 

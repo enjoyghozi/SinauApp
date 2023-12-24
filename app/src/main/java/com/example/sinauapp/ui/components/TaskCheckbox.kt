@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun TaskCheckbox(
-    isStatus: Boolean,
+    isComplete: Boolean,
     borderColor: Color,
     onCheckBoxClick: () -> Unit
 ) {
@@ -32,7 +32,7 @@ fun TaskCheckbox(
             },
         contentAlignment = Alignment.Center
     ) {
-        AnimatedVisibility(visible = isStatus) {
+        AnimatedVisibility(visible = isComplete) {
             Icon(
                 modifier = Modifier.size(20.dp),
                 imageVector = Icons.Rounded.Check,

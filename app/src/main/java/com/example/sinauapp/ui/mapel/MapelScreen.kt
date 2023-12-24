@@ -41,6 +41,8 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sinauapp.domain.model.Mapel
 import com.example.sinauapp.sessions
 import com.example.sinauapp.tasks
@@ -64,9 +66,12 @@ data class MapelScreenNavArgs(
 fun MapelScreenRoute(
     navigator: DestinationsNavigator,
 ) {
+    val viewModel: MapelViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
     MapelScreen(
-        state = MapelState(),
-        onEvent = {},
+        state = state,
+        onEvent = viewModel::onEvent,
         onBackButtonClick = { navigator.navigateUp()},
         onAddTaskButtonClick = {
             val navArg = TaskScreenNavArgs(taskId = null, mapelId = -1)

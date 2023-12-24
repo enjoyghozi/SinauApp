@@ -10,7 +10,7 @@ data class Task(
     val dueDate: Long,
     val priority: Int,
     val relatedToMapel: String,
-    val isStatus: Boolean,
+    val isComplete: Boolean,
     val taskMapelId: Int,
     @PrimaryKey(autoGenerate = true)
     val taskId: Int? = null

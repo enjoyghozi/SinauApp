@@ -145,7 +145,7 @@ private fun TaskScreen(
         topBar =  {
             TaskScreenTopBar(
                 isTaskExist = true,
-                isStatus = false,
+                isComplete = false,
                 checkBoxBorderColor = Color.Red,
                 onBackButtonClick = onBackButtonClick,
                 onDeleteButtonClick = { isDeleteDialogOpen = true },
@@ -280,7 +280,7 @@ private fun TaskScreen(
 @Composable
 private fun TaskScreenTopBar(
     isTaskExist: Boolean,
-    isStatus: Boolean,
+    isComplete: Boolean,
     checkBoxBorderColor: Color,
     onBackButtonClick: () -> Unit,
     onDeleteButtonClick: () -> Unit,
@@ -304,7 +304,7 @@ private fun TaskScreenTopBar(
         actions = {
             if (isTaskExist) {
                 TaskCheckbox(
-                    isStatus = isStatus,
+                    isComplete = isComplete,
                     borderColor = checkBoxBorderColor,
                     onCheckBoxClick = onCheckBoxClick
                 )
