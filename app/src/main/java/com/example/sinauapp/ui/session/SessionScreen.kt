@@ -31,6 +31,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sinauapp.mapel
@@ -38,6 +39,9 @@ import com.example.sinauapp.sessions
 import com.example.sinauapp.ui.components.DeleteDialog
 import com.example.sinauapp.ui.components.MapelListBottomSheet
 import com.example.sinauapp.ui.components.studySessionList
+import com.example.sinauapp.utility.Constants.ACTION_SERVICE_CANCEL
+import com.example.sinauapp.utility.Constants.ACTION_SERVICE_START
+import com.example.sinauapp.utility.Constants.ACTION_SERVICE_STOP
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
@@ -60,6 +64,8 @@ private fun SessionScreen(
 ) {
 
     /* Variables */
+
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
     val sheetState = rememberModalBottomSheetState()
@@ -133,9 +139,24 @@ private fun SessionScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp),
-                    startButtonClick = { /*TODO*/ },
-                    cancelButtonClick = { /*TODO*/ },
-                    finishButtonClick = { /*TODO*/ }
+                    startButtonClick = {
+                       ServiceHelper.triggerForegroundService(
+                           context = context,
+                           action = ACTION_SERVICE_START
+                       )
+                    },
+                    cancelButtonClick = {
+                        ServiceHelper.triggerForegroundService(
+                            context = context,
+                            action = ACTION_SERVICE_CANCEL
+                        )
+                    },
+                    finishButtonClick = {
+                        ServiceHelper.triggerForegroundService(
+                            context = context,
+                            action = ACTION_SERVICE_STOP
+                        )
+                    }
                 )
             }
 

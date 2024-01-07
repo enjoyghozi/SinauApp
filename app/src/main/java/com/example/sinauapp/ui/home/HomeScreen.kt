@@ -126,9 +126,7 @@ private fun HomeScreen(
                     )
                 }
 
-                SnackbarEvent.NavigateUp -> {
-
-                }
+                SnackbarEvent.NavigateUp -> {}
             }
         }
     }

@@ -217,8 +217,8 @@ private fun MapelScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp),
-                    studiesHours = state.goalStudyHours,
-                    goalHours = state.studiedHours.toString(),
+                    studiesHours = state.studiedHours.toString(),
+                    goalHours = state.goalStudyHours,
                     progress = state.progress
                 )
             }

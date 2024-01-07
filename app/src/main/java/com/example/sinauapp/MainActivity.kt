@@ -1,9 +1,11 @@
 package com.example.sinauapp
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.app.ActivityCompat
 import com.example.sinauapp.domain.model.Mapel
 import com.example.sinauapp.domain.model.Session
 import com.example.sinauapp.domain.model.Task
@@ -20,6 +22,17 @@ class MainActivity : ComponentActivity() {
             SinauAppTheme {
                 DestinationsNavHost(navGraph = NavGraphs.root)
             }
+        }
+        requestPermissions()
+    }
+
+    private fun requestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                0
+            )
         }
     }
 }
