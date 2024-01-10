@@ -370,7 +370,7 @@ private fun timerButtonSection(
 }
 
 private fun timerTextAnimation(duration: Int = 600): ContentTransform {
-    return slideInVertically(animationSpec = tween(duration)) { fullWeight -> fullWeight } +
+    return slideInVertically(animationSpec = tween(duration)) { fullHeight -> fullHeight } +
             fadeIn(animationSpec = tween(duration)) togetherWith
             slideOutVertically(animationSpec = tween(duration)) { fullHeight -> fullHeight } +
             fadeOut(animationSpec = tween(duration))
