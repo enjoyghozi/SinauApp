@@ -30,10 +30,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,18 +50,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.sinauapp.mapel
-import com.example.sinauapp.sessions
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sinauapp.ui.components.DeleteDialog
 import com.example.sinauapp.ui.components.MapelListBottomSheet
 import com.example.sinauapp.ui.components.studySessionList
 import com.example.sinauapp.utility.Constants.ACTION_SERVICE_CANCEL
 import com.example.sinauapp.utility.Constants.ACTION_SERVICE_START
 import com.example.sinauapp.utility.Constants.ACTION_SERVICE_STOP
+import com.example.sinauapp.utility.SnackbarEvent
 import com.ramcosta.composedestinations.annotation.DeepLink
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.time.DurationUnit
 
 /* Route */
 @Destination(
@@ -75,7 +81,11 @@ fun SessionScreenRoute(
         timerService: SessionTimerService
     ) {
         val viewModel: SessionViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsStateWithLifecycle()
         SessionScreen(
+            state = state,
+            snackbarEvent = viewModel.snackbarEventFlow,
+            onEvent = viewModel::onEvent,
             onBackButtonClick = { navigator.navigateUp() },
             timerService = timerService
         )
@@ -84,6 +94,9 @@ fun SessionScreenRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SessionScreen(
+    state: SessionState,
+    snackbarEvent: SharedFlow<SnackbarEvent>,
+    onEvent: (SessionEvent) -> Unit,
     onBackButtonClick: () -> Unit,
     timerService: SessionTimerService
 ) {
@@ -103,19 +116,37 @@ private fun SessionScreen(
 
     var isDeleteDialogOpen by remember { mutableStateOf(false) }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(key1 = true) {
+        snackbarEvent.collectLatest { event ->
+            when (event) {
+                is SnackbarEvent.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.message,
+                        duration = event.duration
+                    )
+                }
+
+                SnackbarEvent.NavigateUp -> {}
+            }
+        }
+    }
+
     /* Bottom Sheet Mapel */
     MapelListBottomSheet(
         sheetState = sheetState,
         isOpen = isBottomSheetOpen,
-        mapel = mapel,
+        mapel = state.mapel,
         onDismissRequest = { isBottomSheetOpen = false },
-        onMapelClicked = {
+        onMapelClicked = { mapel ->
             isBottomSheetOpen = false
             scope.launch {
                 sheetState.hide()
             }.invokeOnCompletion {
                 if (!sheetState.isVisible) isBottomSheetOpen = false
             }
+            onEvent(SessionEvent.OnRelatedToMapelChange(mapel))
         }
     )
 
@@ -126,12 +157,14 @@ private fun SessionScreen(
         bodyText = "Apakah anda yakin ingin menghapus sesi ini?" + "\n" + "Sesi yang di hapus tidak dapat dikembalikan",
         onDismissRequest = { isDeleteDialogOpen = false },
         onConfirmButtonClick = {
+            onEvent(SessionEvent.DeleteSession)
             isDeleteDialogOpen = false
         }
     )
 
     /* Load Content */
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             sessionScreenTopBar(onBackButtonClicked = onBackButtonClick)
         }
@@ -159,7 +192,7 @@ private fun SessionScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp),
-                    relatedToMapel = "Matematika",
+                    relatedToMapel = state.relatedToMapel ?: "",
                     selectMapelButtonClicked = {
                         isBottomSheetOpen = true
                     }
@@ -186,7 +219,16 @@ private fun SessionScreen(
                             action = ACTION_SERVICE_CANCEL
                         )
                     },
-                    finishButtonClick = {},
+                    finishButtonClick = {
+                        val duration = timerService.duration.toLong(DurationUnit.SECONDS)
+                        if (duration >= 59) {
+                            ServiceHelper.triggerForegroundService(
+                                context = context,
+                                action = ACTION_SERVICE_CANCEL
+                            )
+                        }
+                        onEvent(SessionEvent.SaveSession(duration))
+                    },
                     timerState = currentTimerState,
                     seconds = seconds
                 )
@@ -197,9 +239,10 @@ private fun SessionScreen(
                 sectionTitle = "Waktu Belajar",
                 emptyListText = "Anda tidak memiliki sesi belajar.\n" +
                         "Klik tombol + di layar mata pelajaran untuk menambahkan waktu belajar baru.",
-                sessions = sessions,
-                onDeleteIconClick = {
+                sessions = state.sessions,
+                onDeleteIconClick = { sessions ->
                     isDeleteDialogOpen = true
+                    onEvent(SessionEvent.OnDeleteSessionButtonClick(sessions))
                 }
             )
         }

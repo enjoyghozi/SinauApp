@@ -116,7 +116,7 @@ class HomeViewModel @Inject constructor(
             HomeEvent.SaveMapel -> saveMapel()
 
             /* Event for Delete Session */
-            HomeEvent.DeleteSession -> TODO()
+            HomeEvent.DeleteSession -> deleteSession()
 
             /* Event for Task isComplete */
             is HomeEvent.OnTaskIsCompleteChange -> {
@@ -181,4 +181,23 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun deleteSession() {
+        viewModelScope.launch {
+            try {
+                state.value.session?.let {
+                    sessionRepository.deleteSession(it)
+                    _snackbarEventFlow.emit(
+                        SnackbarEvent.ShowSnackbar(message = "Sesi belajar berhasil di hapus")
+                    )
+                }
+            } catch (e: Exception) {
+                _snackbarEventFlow.emit(
+                    SnackbarEvent.ShowSnackbar(
+                        message = "Tidak bisa menghapus sesi. ${e.message}",
+                        duration = SnackbarDuration.Long
+                    )
+                )
+            }
+        }
+    }
 }

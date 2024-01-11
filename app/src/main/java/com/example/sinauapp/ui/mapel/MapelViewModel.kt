@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sinauapp.domain.model.Mapel
+import com.example.sinauapp.domain.model.Task
 import com.example.sinauapp.domain.repository.MapelRepository
 import com.example.sinauapp.domain.repository.SessionRepository
 import com.example.sinauapp.domain.repository.TaskRepository
@@ -88,9 +89,15 @@ class MapelViewModel @Inject constructor(
             MapelEvent.UpdateMapel -> updateMapel()
 
             MapelEvent.DeleteMapel -> deleteMapel()
-            MapelEvent.DeleteSession -> TODO()
-            is MapelEvent.OnDeleteSessionButtonClick -> TODO()
-            is MapelEvent.OnTaskIsCompleteChange -> TODO()
+            MapelEvent.DeleteSession -> deleteSession()
+            is MapelEvent.OnDeleteSessionButtonClick -> {
+                _state.update {
+                    it.copy(session = event.session)
+                }
+            }
+            is MapelEvent.OnTaskIsCompleteChange -> {
+                updateTask(event.task)
+            }
             MapelEvent.UpdateProgress -> {
                 val goalStudyHours = state.value.goalStudyHours.toFloatOrNull() ?: 1f
                 _state.update {
@@ -169,6 +176,52 @@ class MapelViewModel @Inject constructor(
                 _snackbarEventFlow.emit(
                     SnackbarEvent.ShowSnackbar(
                         message = "Tidak bisa menghapus Mapel.\n" + "essage: ${e.message}",
+                        duration = SnackbarDuration.Long
+                    )
+                )
+            }
+        }
+    }
+
+    private fun updateTask(task: Task) {
+        viewModelScope.launch {
+            try {
+                taskRepository.upsertTask(
+                    task = task.copy(isComplete = !task.isComplete)
+                )
+                if (task.isComplete) {
+                    _snackbarEventFlow.emit(
+                        SnackbarEvent.ShowSnackbar(message = "Saved in upcoming tasks.")
+                    )
+                } else {
+                    _snackbarEventFlow.emit(
+                        SnackbarEvent.ShowSnackbar(message = "Saved in completed tasks.")
+                    )
+                }
+            } catch (e: Exception) {
+                _snackbarEventFlow.emit(
+                    SnackbarEvent.ShowSnackbar(
+                        message = "Couldn't update task. ${e.message}",
+                        duration = SnackbarDuration.Long
+                    )
+                )
+            }
+        }
+    }
+
+    private fun deleteSession() {
+        viewModelScope.launch {
+            try {
+                state.value.session?.let {
+                    sessionRepository.deleteSession(it)
+                    _snackbarEventFlow.emit(
+                        SnackbarEvent.ShowSnackbar(message = "Sesi belajar berhasil di hapus")
+                    )
+                }
+            } catch (e: Exception) {
+                _snackbarEventFlow.emit(
+                    SnackbarEvent.ShowSnackbar(
+                        message = "Tidak bisa menghapus sesi. ${e.message}",
                         duration = SnackbarDuration.Long
                     )
                 )
