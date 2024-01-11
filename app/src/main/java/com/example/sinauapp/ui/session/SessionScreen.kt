@@ -133,6 +133,16 @@ private fun SessionScreen(
         }
     }
 
+    LaunchedEffect(key1 = state.mapel) {
+        val mapelId = timerService.mapelId.value
+        onEvent(
+            SessionEvent.UpdateMapelIdAndRelatedToMapel(
+                mapelId = mapelId,
+                relatedToMapel = state.mapel.find { it.mapelId == mapelId }?.name
+            )
+        )
+    }
+
     /* Bottom Sheet Mapel */
     MapelListBottomSheet(
         sheetState = sheetState,
@@ -193,9 +203,8 @@ private fun SessionScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp),
                     relatedToMapel = state.relatedToMapel ?: "",
-                    selectMapelButtonClicked = {
-                        isBottomSheetOpen = true
-                    }
+                    selectMapelButtonClicked = { isBottomSheetOpen = true },
+                    seconds = seconds
                 )
             }
 
@@ -206,12 +215,17 @@ private fun SessionScreen(
                         .fillMaxWidth()
                         .padding(12.dp),
                     startButtonClick = {
-                       ServiceHelper.triggerForegroundService(
-                           context = context,
-                           action = if (currentTimerState == TimerState.STARTED) {
-                               ACTION_SERVICE_STOP
-                           } else ACTION_SERVICE_START
-                       )
+                        if (state.mapelId != null && state.relatedToMapel != null) {
+                            ServiceHelper.triggerForegroundService(
+                                context = context,
+                                action = if (currentTimerState == TimerState.STARTED) {
+                                    ACTION_SERVICE_STOP
+                                } else ACTION_SERVICE_START
+                            )
+                            timerService.mapelId.value = state.mapelId
+                        } else {
+                            onEvent(SessionEvent.NotifyToUpdateMapel)
+                        }
                     },
                     cancelButtonClick = {
                         ServiceHelper.triggerForegroundService(
@@ -332,7 +346,8 @@ private fun timerSection(
 private fun relatedToMapelSection(
     modifier: Modifier,
     relatedToMapel: String,
-    selectMapelButtonClicked: () -> Unit
+    selectMapelButtonClicked: () -> Unit,
+    seconds: String
 ) {
     Column (modifier = modifier) {
         Text(
@@ -348,7 +363,10 @@ private fun relatedToMapelSection(
                 text = "English",
                 style = MaterialTheme.typography.bodyLarge
             )
-            IconButton(onClick = selectMapelButtonClicked) {
+            IconButton(
+                onClick = selectMapelButtonClicked,
+                enabled = seconds == "00"
+            ) {
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = "Select Subject"

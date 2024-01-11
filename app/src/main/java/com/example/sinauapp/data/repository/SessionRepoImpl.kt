@@ -4,6 +4,7 @@ import com.example.sinauapp.data.local.SessionDao
 import com.example.sinauapp.domain.model.Session
 import com.example.sinauapp.domain.repository.SessionRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import javax.inject.Inject
 
@@ -21,14 +22,19 @@ class SessionRepoImpl @Inject constructor(
 
     override fun getAllSessions(): Flow<List<Session>> {
         return sessionDao.getAllSessions()
+            .map { session -> session.sortedByDescending { it.date } }
     }
 
     override fun getRecentFiveSessions(): Flow<List<Session>> {
-        return sessionDao.getAllSessions().take(count = 5)
+        return sessionDao.getAllSessions()
+            .map { session -> session.sortedByDescending { it.date } }
+            .take(count = 5)
     }
 
     override fun getRecentTenSessionsForMapel(mapelId: Int): Flow<List<Session>> {
-        return sessionDao.getRecentSessionsForMapel(mapelId).take(count = 10)
+        return sessionDao.getRecentSessionsForMapel(mapelId)
+            .map { sessions -> sessions.sortedByDescending { it.date } }
+            .take(count = 10)
     }
 
     override fun getTotalSessionsDuration(): Flow<Long> {

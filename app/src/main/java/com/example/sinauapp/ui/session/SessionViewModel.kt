@@ -46,7 +46,7 @@ class SessionViewModel @Inject constructor(
 
     fun onEvent(event: SessionEvent) {
         when(event) {
-            SessionEvent.CheckMapelId -> {}
+            SessionEvent.NotifyToUpdateMapel -> notifyToUpdateMapel()
             SessionEvent.DeleteSession -> deleteSession()
             is SessionEvent.OnDeleteSessionButtonClick -> {}
             is SessionEvent.OnRelatedToMapelChange -> {
@@ -58,7 +58,26 @@ class SessionViewModel @Inject constructor(
                 }
             }
             is SessionEvent.SaveSession -> insertSession(event.duration)
-            is SessionEvent.UpdateMapelIdAndRelatedToMapel -> {}
+            is SessionEvent.UpdateMapelIdAndRelatedToMapel -> {
+                _state.update {
+                    it.copy(
+                        relatedToMapel = event.relatedToMapel,
+                        mapelId = event.mapelId
+                    )
+                }
+            }
+        }
+    }
+
+    private fun notifyToUpdateMapel() {
+        viewModelScope.launch {
+            if (state.value.mapelId == null || state.value.relatedToMapel == null) {
+                _snackbarEventFlow.emit(
+                    SnackbarEvent.ShowSnackbar(
+                        message = "Silahkan pilih mata pelajaran"
+                    )
+                )
+            }
         }
     }
 

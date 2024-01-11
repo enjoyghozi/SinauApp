@@ -8,7 +8,7 @@ sealed class SessionEvent {
     data class SaveSession(val duration: Long)  : SessionEvent()
     data class OnDeleteSessionButtonClick(val session: Session) : SessionEvent()
     data object DeleteSession : SessionEvent()
-    data object CheckMapelId : SessionEvent()
+    data object NotifyToUpdateMapel : SessionEvent()
     data class UpdateMapelIdAndRelatedToMapel(
         val mapelId: Int?,
         val relatedToMapel: String?
