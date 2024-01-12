@@ -48,7 +48,11 @@ class SessionViewModel @Inject constructor(
         when(event) {
             SessionEvent.NotifyToUpdateMapel -> notifyToUpdateMapel()
             SessionEvent.DeleteSession -> deleteSession()
-            is SessionEvent.OnDeleteSessionButtonClick -> {}
+            is SessionEvent.OnDeleteSessionButtonClick -> {
+                _state.update {
+                    it.copy(session = event.session)
+                }
+            }
             is SessionEvent.OnRelatedToMapelChange -> {
                 _state.update {
                     it.copy(

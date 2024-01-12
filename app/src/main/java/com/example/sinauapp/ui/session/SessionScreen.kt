@@ -360,7 +360,7 @@ private fun relatedToMapelSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "English",
+                text = relatedToMapel,
                 style = MaterialTheme.typography.bodyLarge
             )
             IconButton(
@@ -369,7 +369,7 @@ private fun relatedToMapelSection(
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "Select Subject"
+                    contentDescription = "Select Mapel"
                 )
             }
         }

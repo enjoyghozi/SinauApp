@@ -47,8 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sinauapp.domain.model.Mapel
-import com.example.sinauapp.sessions
-import com.example.sinauapp.tasks
 import com.example.sinauapp.ui.components.AddMapelDialog
 import com.example.sinauapp.ui.components.CountCard
 import com.example.sinauapp.ui.components.DeleteDialog
